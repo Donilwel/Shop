@@ -20,6 +20,13 @@ func ShowMerchHandler(w http.ResponseWriter, r *http.Request) {
 	var merches []models.Merch
 	cacheKey := "merch:all"
 
+	select {
+	case <-ctx.Done():
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusRequestTimeout, nil, startTime, "Запрос отменен клиентом")
+		return
+	default:
+	}
+
 	fromCache, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, cacheKey, migrations.DB, &merches, 5*time.Minute)
 	if err != nil {
 		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при поиске мерча.")

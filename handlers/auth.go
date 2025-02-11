@@ -5,6 +5,7 @@ import (
 	"Shop/database/models"
 	"Shop/loging"
 	"Shop/utils"
+	"context"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -14,8 +15,15 @@ import (
 	"time"
 )
 
+const (
+	ADMIN_EMAIL    string = "admin@admin"
+	ADMIN_PASSWORD string = "admin"
+)
+
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
 
 	var input struct {
 		Email    string `json:"email"`
@@ -27,10 +35,24 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Некорректное тело запроса", http.StatusBadRequest)
 		return
 	}
+	tx := migrations.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusRequestTimeout, nil, startTime, "Запрос отменен клиентом")
+		http.Error(w, "Запрос отменен", http.StatusRequestTimeout)
+		return
+	default:
+	}
 
 	var user models.User
-	if err := migrations.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
-		if input.Email == "" {
+	if err := tx.WithContext(ctx).Where("email = ?", input.Email).First(&user).Error; err != nil {
+		if input.Email == "" || input.Password == "" {
 			loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusBadRequest, nil, startTime, "Email пользователя обязателен при первой авторизации")
 			http.Error(w, "Email пользователя обязательно при первой авторизации", http.StatusBadRequest)
 			return
@@ -49,18 +71,20 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 			Email:    input.Email,
 			Password: string(hashedPassword),
 		}
-
-		if err := migrations.DB.Create(&user).Error; err != nil {
+		if user.Email == ADMIN_EMAIL && input.Password == ADMIN_PASSWORD {
+			user.Role = models.ADMIN_ROLE
+		}
+		if err := tx.WithContext(ctx).Create(&user).Error; err != nil {
 			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать пользователя")
 			http.Error(w, "Не удалось создать пользователя", http.StatusInternalServerError)
 			return
 		}
-		if err := migrations.DB.Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
+		if err := tx.WithContext(ctx).Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
 			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
 			http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
 			return
 		}
-
+		tx.Commit()
 		loging.LogRequest(logrus.InfoLevel, user.ID, r, http.StatusCreated, nil, startTime, "Пользователь создан автоматически")
 	}
 
