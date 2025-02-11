@@ -21,9 +21,8 @@ func main() {
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
 
-	if err := http.ListenAndServe("localhost:8080", r); err != nil {
-		loging.Log.Fatal("Сервер не заработан.")
-		return
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		loging.Log.Fatal("Сервер не заработал.")
 	}
-	loging.Log.Info("Сервер успешно запущен.")
+	loging.Log.Info("Сервер успешно запущен на порту: ", 8080)
 }

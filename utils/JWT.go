@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"Sneszana/database/migrations"
-	"Sneszana/models"
+	"Shop/database/migrations"
+	"Shop/database/models"
 	"context"
 	"fmt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"net/http"
 	"strings"
