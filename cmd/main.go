@@ -27,6 +27,7 @@ func main() {
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
 	apiRouter.HandleFunc("/auth", handlers.AuthHandler).Methods("POST")
+	apiRouter.HandleFunc("/auth/logout", handlers.LogoutHandler).Methods("POST")
 	apiRouter.HandleFunc("/merch", handlers.ShowMerchHandler).Methods("GET")
 
 	employeeInfoRouter := apiRouter.PathPrefix("/info").Subrouter()

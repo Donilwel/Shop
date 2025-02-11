@@ -7,6 +7,7 @@ import (
 	"Shop/loging"
 	"Shop/utils"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
@@ -48,24 +49,42 @@ func ShowUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
-	//startTime := time.Now()
-	//params := mux.Vars(r)
-	//nickTaker := params["username"]
-	//userID, _ := r.Context().Value("userID").(uuid.UUID)
-	//var userTaker, userSender models.User
-	//tx := migrations.DB.Begin()
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		tx.Rollback()
-	//	}
-	//}()
-	//
-	//if err := tx.Where("username = ?", nickTaker).First(&userTaker).Error; err != nil {
-	//	loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Работник с никнеймом "+nickTaker+" не найден.")
-	//	http.Error(w, "Работник с никнеймом "+nickTaker+" не найден.", http.StatusNotFound)
-	//	return
-	//}
-	//
-	//tx.Commit()
+	startTime := time.Now()
+	params := mux.Vars(r)
+	nickTaker := params["username"]
+	userID, _ := r.Context().Value("userID").(uuid.UUID)
+	var userTaker, userSender models.User
+	tx := migrations.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var walletSender, walletTaker models.Wallet
+	if err := tx.Where("user_id = ?", userID).First(&walletSender).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Кошелек работника кто хочет перевести деньги не найден.")
+		http.Error(w, "Кошелек работника кто хочет перевести деньги не найден.", http.StatusNotFound)
+		return
+	}
+	if err := tx.Where("user_id = ?", userID).First(&userSender).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Работник кто хочет перевести деньги не найден.")
+		http.Error(w, "Работник кто хочет перевести деньги не найден.", http.StatusNotFound)
+		return
+	}
+
+	if err := tx.Where("username = ?", nickTaker).First(&userTaker).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Работник с никнеймом "+nickTaker+" не найден.")
+		http.Error(w, "Работник с никнеймом "+nickTaker+" не найден.", http.StatusNotFound)
+		return
+	}
+
+	if err := tx.Where("user_id = ?", userTaker.ID).First(&walletTaker).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Кошелек работника которому хотят перевести деньги не найден.")
+		http.Error(w, "Кошелек работника которому хотят перевести деньги не найден.", http.StatusNotFound)
+		return
+	}
+
+	tx.Commit()
 
 }

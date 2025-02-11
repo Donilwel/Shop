@@ -46,3 +46,33 @@
 {"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T04:44:17Z"}
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T04:44:17Z"}
 {"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T04:44:17Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T11:05:56Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T11:05:56Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T11:05:56Z"}
+{"fields.time":"102.140012ms","level":"error","method":"POST","msg":"dima@edu.hse.ru","path":"/api/auth","status":500,"time":"2025-02-11T11:08:00Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"128.667011ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T11:08:00Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"fields.time":"230.855137ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T11:08:00Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"fields.time":"102.83419ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T11:08:05Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T11:19:06Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T11:19:06Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T11:19:06Z"}
+{"fields.time":"8.891245ms","level":"info","method":"POST","msg":"Пользователь успешно вышел из системы","path":"/api/auth/logout","status":200,"time":"2025-02-11T11:19:07Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T12:23:06Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T12:23:06Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T12:23:06Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T12:23:11Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T12:23:11Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T12:23:11Z"}
+{"fields.time":"103.874535ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T12:23:17Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"error":"EOF","fields.time":"5.247µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:23:55Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"error":"ERROR: column \"user_id\" does not exist (SQLSTATE 42703)","fields.time":"5.678313ms","level":"warning","method":"POST","msg":"Работник кто хочет перевести деньги не найден.","path":"/api/sendCoin","status":404,"time":"2025-02-11T12:24:49Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T12:25:56Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T12:25:56Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T12:25:56Z"}
+{"error":"record not found","fields.time":"3.105107ms","level":"warning","method":"POST","msg":"Работник с никнеймом  не найден.","path":"/api/sendCoin","status":404,"time":"2025-02-11T12:26:10Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"error":"invalid character 'S' looking for beginning of value","fields.time":"58.102µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:26:37Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"error":"json: cannot unmarshal number -100 into Go struct field .coin of type uint","fields.time":"30.515µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:29Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"fields.time":"894.805µs","level":"warning","method":"POST","msg":"Количество монет должно быть больше 0","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:37Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"2.072379ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:46Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"fields.time":"2.738811ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:57Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"fields.time":"4.1487ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:58Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
