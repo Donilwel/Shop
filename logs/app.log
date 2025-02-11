@@ -20,3 +20,12 @@
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:36:55Z"}
 {"fields.time":"107.514293ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T01:37:18Z","userID":"428e83d6-b2bb-4a2e-8e6f-e65c1aee5432"}
 {"fields.time":"202.014281ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T01:37:18Z","userID":"428e83d6-b2bb-4a2e-8e6f-e65c1aee5432"}
+{"fields.time":"76.318214ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T01:40:40Z","userID":"408ee2c8-dd47-45fc-aee0-f33d005bdd59"}
+{"fields.time":"194.450298ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T01:40:40Z","userID":"408ee2c8-dd47-45fc-aee0-f33d005bdd59"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:10:35Z"}
+{"fields.time":"6.202998ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью postgreSQL","path":"/api/merch","status":200,"time":"2025-02-11T02:11:00Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"1.627725ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/merch","status":200,"time":"2025-02-11T02:11:22Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"500.593µs","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/merch","status":200,"time":"2025-02-11T02:11:33Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:14:32Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T02:15:13Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:15:13Z"}

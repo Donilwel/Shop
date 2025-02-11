@@ -55,7 +55,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Не удалось создать пользователя", http.StatusInternalServerError)
 			return
 		}
-		if err := migrations.DB.Create(&models.Wallet{UserID: user.ID, Coin: 100}).Error; err != nil {
+		if err := migrations.DB.Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
 			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
 			http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
 			return

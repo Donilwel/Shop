@@ -1,10 +1,10 @@
 package config
 
 import (
+	"Shop/loging"
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"log"
 	"os"
 	"time"
 )
@@ -35,8 +35,8 @@ func InitRedis() {
 	defer cancel()
 
 	if _, err := Rdb.Ping(ctx).Result(); err != nil {
-		log.Println("Failed to connect to Redis")
+		loging.Log.Error("Ошибка подключения к Redis")
 		return
 	}
-	log.Println("Connected to Redis successfully")
+	loging.Log.Info("Подключение к Redis успешно")
 }
