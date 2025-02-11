@@ -6,3 +6,4 @@
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:56:33Z"}
 {"fields.time":"3.107µs","level":"info","method":"GET","msg":"Ping request complete","path":"/api/ping","status":200,"time":"2025-02-10T23:56:37Z","userID":"00000000-0000-0000-0000-000000000000"}
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:57:45Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T00:06:22Z"}

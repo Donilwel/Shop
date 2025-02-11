@@ -30,6 +30,11 @@ func InitDB() {
 
 	if err := DB.AutoMigrate(
 		&models.User{},
+		&models.Merch{},
+		&models.RevokedToken{},
+		&models.Transaction{},
+		&models.Purchase{},
+		&models.Wallet{},
 	); err != nil {
 		loging.Log.WithError(err).Fatal("Ошибка миграции базы данных.")
 		return
