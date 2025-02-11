@@ -18,9 +18,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 
 	var input struct {
-		Name     string `json:"name"`
 		Email    string `json:"email"`
-		Number   string `json:"number"`
 		Password string `json:"password"`
 	}
 
@@ -30,21 +28,11 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if input.Email == "" {
-		input.Email = "none"
-	}
-
-	if input.Number == "" {
-		input.Number = "0"
-	}
-
 	var user models.User
-	err := migrations.DB.Where("user = ?", input.Email).First(&user).Error
-
-	if err != nil {
-		if input.Name == "" {
-			loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusBadRequest, nil, startTime, "Имя пользователя обязательно при первой авторизации")
-			http.Error(w, "Имя пользователя обязательно при первой авторизации", http.StatusBadRequest)
+	if err := migrations.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
+		if input.Email == "" {
+			loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusBadRequest, nil, startTime, "Email пользователя обязателен при первой авторизации")
+			http.Error(w, "Email пользователя обязательно при первой авторизации", http.StatusBadRequest)
 			return
 		}
 
@@ -56,16 +44,20 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		user = models.User{
-			ID:          uuid.New(),
-			Name:        input.Name,
-			Email:       input.Email,
-			PhoneNumber: input.Number,
-			Password:    string(hashedPassword),
+			ID:       uuid.New(),
+			Username: utils.GenerateUsername(),
+			Email:    input.Email,
+			Password: string(hashedPassword),
 		}
 
-		if createErr := migrations.DB.Create(&user).Error; createErr != nil {
-			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, createErr, startTime, "Не удалось создать пользователя")
+		if err := migrations.DB.Create(&user).Error; err != nil {
+			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать пользователя")
 			http.Error(w, "Не удалось создать пользователя", http.StatusInternalServerError)
+			return
+		}
+		if err := migrations.DB.Create(&models.Wallet{UserID: user.ID, Coin: 100}).Error; err != nil {
+			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
+			http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
 			return
 		}
 
@@ -73,12 +65,12 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusUnauthorized, err, startTime, "Неверный пароль на аккаунте у пользователя: "+input.Name)
-		http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
+		loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusUnauthorized, err, startTime, "Неверный пароль на аккаунте у пользователя: "+user.Username)
+		http.Error(w, "Неверный пароль на аккаунте у пользователя: "+user.Username, http.StatusUnauthorized)
 		return
 	}
 
-	token, err := utils.GenerateJWT(user.ID, user.Name)
+	token, err := utils.GenerateJWT(user.ID, user.Email)
 	if err != nil {
 		loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать JWT")
 		http.Error(w, "Не удалось создать JWT", http.StatusInternalServerError)

@@ -39,5 +39,4 @@ func InitDB() {
 		loging.Log.WithError(err).Fatal("Ошибка миграции базы данных.")
 		return
 	}
-	loging.Log.Info("database migrated successfully")
 }

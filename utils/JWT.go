@@ -12,12 +12,12 @@ import (
 	"time"
 )
 
-var jwtSecret = []byte("h8hjfdjfd04kfmfdo32nifsdnf3")
+var jwtSecret = []byte("h8hjfdjiudfgh487&849fd04kfmfdo32nifsdnf3")
 
-func GenerateJWT(userId uuid.UUID, name string) (string, error) {
+func GenerateJWT(userId uuid.UUID, email string) (string, error) {
 	claims := jwt.MapClaims{
 		"userID": userId,
-		"name":   name,
+		"email":  email,
 		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

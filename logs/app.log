@@ -7,3 +7,16 @@
 {"fields.time":"3.107µs","level":"info","method":"GET","msg":"Ping request complete","path":"/api/ping","status":200,"time":"2025-02-10T23:56:37Z","userID":"00000000-0000-0000-0000-000000000000"}
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:57:45Z"}
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T00:06:22Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:09:19Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:10:10Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:11:47Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:28:48Z"}
+{"fields.time":"2.651µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T01:28:57Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:30:07Z"}
+{"error":"invalid character 'e' looking for beginning of object key string","fields.time":"78.473µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/auth","status":400,"time":"2025-02-11T01:31:13Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"error":"invalid character 'e' looking for beginning of object key string","fields.time":"136.678µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/auth","status":400,"time":"2025-02-11T01:31:19Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"error":"invalid character 'd' looking for beginning of value","fields.time":"89.771µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/auth","status":400,"time":"2025-02-11T01:32:23Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"error":"ERROR: null value in column \"phone_number\" of relation \"users\" violates not-null constraint (SQLSTATE 23502)","fields.time":"104.461432ms","level":"error","method":"POST","msg":"Не удалось создать пользователя","path":"/api/auth","status":500,"time":"2025-02-11T01:32:35Z","userID":"bab84f4b-d3f9-47f3-84c5-fd7ada969672"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:36:55Z"}
+{"fields.time":"107.514293ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T01:37:18Z","userID":"428e83d6-b2bb-4a2e-8e6f-e65c1aee5432"}
+{"fields.time":"202.014281ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T01:37:18Z","userID":"428e83d6-b2bb-4a2e-8e6f-e65c1aee5432"}

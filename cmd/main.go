@@ -17,9 +17,10 @@ func main() {
 	r := mux.NewRouter()
 	loging.InitLogging()
 	loging.Log.Info("Сервер запущен успешно")
-
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
+
+	apiRouter.HandleFunc("/auth", handlers.AuthHandler).Methods("POST")
 
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		loging.Log.Fatal("Сервер не заработал.")
