@@ -17,7 +17,7 @@ import (
 
 const (
 	ADMIN_EMAIL    string = "admin@admin"
-	ADMIN_PASSWORD string = "admin"
+	ADMIN_PASSWORD string = "$2a$10$W6GQy6eZ6GjyrQzKZwjmn.wQ9WT4QZ7lpq3Kv6/G1Fdq16VHPcITm"
 )
 
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +64,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Не удалось зашифровать пароль", http.StatusInternalServerError)
 			return
 		}
+		loging.LogRequest(logrus.ErrorLevel, uuid.Nil, r, http.StatusInternalServerError, hashErr, startTime, input.Password)
 
 		user = models.User{
 			ID:       uuid.New(),
@@ -71,7 +72,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 			Email:    input.Email,
 			Password: string(hashedPassword),
 		}
-		if user.Email == ADMIN_EMAIL && input.Password == ADMIN_PASSWORD {
+		if user.Email == ADMIN_EMAIL && string(hashedPassword) == ADMIN_PASSWORD {
 			user.Role = models.ADMIN_ROLE
 		}
 		if err := tx.WithContext(ctx).Create(&user).Error; err != nil {
@@ -79,10 +80,12 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Не удалось создать пользователя", http.StatusInternalServerError)
 			return
 		}
-		if err := tx.WithContext(ctx).Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
-			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
-			http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
-			return
+		if user.Role != models.ADMIN_ROLE {
+			if err := tx.WithContext(ctx).Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
+				loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
+				http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
+				return
+			}
 		}
 		tx.Commit()
 		loging.LogRequest(logrus.InfoLevel, user.ID, r, http.StatusCreated, nil, startTime, "Пользователь создан автоматически")

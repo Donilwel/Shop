@@ -29,9 +29,24 @@ func main() {
 	apiRouter.HandleFunc("/auth", handlers.AuthHandler).Methods("POST")
 	apiRouter.HandleFunc("/merch", handlers.ShowMerchHandler).Methods("GET")
 
+	employeeInfoRouter := apiRouter.PathPrefix("/info").Subrouter()
+	employeeInfoRouter.Use(utils.AuthMiddleware(models.EMPLOYEE_ROLE))
+	employeeInfoRouter.HandleFunc("", handlers.InformationHandler).Methods("GET")
+
+	employeeSendCoinRouter := apiRouter.PathPrefix("/sendCoin").Subrouter()
+	employeeSendCoinRouter.Use(utils.AuthMiddleware(models.EMPLOYEE_ROLE))
+	employeeSendCoinRouter.HandleFunc("", handlers.SendCoinHandler).Methods("POST")
+
+	employeeBuyItemRouter := apiRouter.PathPrefix("/buy/{item}").Subrouter()
+	employeeBuyItemRouter.Use(utils.AuthMiddleware(models.EMPLOYEE_ROLE))
+	employeeBuyItemRouter.HandleFunc("", handlers.BuyItemHandler).Methods("GET")
+
+	apiRouter.HandleFunc("", handlers.InformationHandler).Methods("GET")
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(utils.AuthMiddleware(models.ADMIN_ROLE))
 	adminRouter.HandleFunc("/merch", handlers.ShowMerchHandler).Methods("GET")
+	adminRouter.HandleFunc("/users", handlers.ShowUserHandler).Methods("GET")
+	adminRouter.HandleFunc("/users/{username}", handlers.PutMoneyHandler).Methods("POST")
 
 	server := &http.Server{
 		Addr:    ":8080",

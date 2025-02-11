@@ -1,70 +1,48 @@
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:44:58Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:47:00Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:48:06Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:51:21Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:52:28Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:56:33Z"}
-{"fields.time":"3.107µs","level":"info","method":"GET","msg":"Ping request complete","path":"/api/ping","status":200,"time":"2025-02-10T23:56:37Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-10T23:57:45Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T00:06:22Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:09:19Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:10:10Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:11:47Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:28:48Z"}
-{"fields.time":"2.651µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T01:28:57Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:30:07Z"}
-{"error":"invalid character 'e' looking for beginning of object key string","fields.time":"78.473µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/auth","status":400,"time":"2025-02-11T01:31:13Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"error":"invalid character 'e' looking for beginning of object key string","fields.time":"136.678µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/auth","status":400,"time":"2025-02-11T01:31:19Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"error":"invalid character 'd' looking for beginning of value","fields.time":"89.771µs","level":"warning","method":"POST","msg":"Некорректное тело запроса","path":"/api/auth","status":400,"time":"2025-02-11T01:32:23Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"error":"ERROR: null value in column \"phone_number\" of relation \"users\" violates not-null constraint (SQLSTATE 23502)","fields.time":"104.461432ms","level":"error","method":"POST","msg":"Не удалось создать пользователя","path":"/api/auth","status":500,"time":"2025-02-11T01:32:35Z","userID":"bab84f4b-d3f9-47f3-84c5-fd7ada969672"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T01:36:55Z"}
-{"fields.time":"107.514293ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T01:37:18Z","userID":"428e83d6-b2bb-4a2e-8e6f-e65c1aee5432"}
-{"fields.time":"202.014281ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T01:37:18Z","userID":"428e83d6-b2bb-4a2e-8e6f-e65c1aee5432"}
-{"fields.time":"76.318214ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T01:40:40Z","userID":"408ee2c8-dd47-45fc-aee0-f33d005bdd59"}
-{"fields.time":"194.450298ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T01:40:40Z","userID":"408ee2c8-dd47-45fc-aee0-f33d005bdd59"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:10:35Z"}
-{"fields.time":"6.202998ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью postgreSQL","path":"/api/merch","status":200,"time":"2025-02-11T02:11:00Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"1.627725ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/merch","status":200,"time":"2025-02-11T02:11:22Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"500.593µs","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/merch","status":200,"time":"2025-02-11T02:11:33Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:14:32Z"}
-{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T02:15:13Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:15:13Z"}
-{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T02:21:47Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:21:47Z"}
-{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T02:21:47Z"}
-{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T02:25:37Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:25:37Z"}
-{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T02:25:37Z"}
-{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T02:55:21Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T02:55:21Z"}
-{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T02:55:21Z"}
-{"fields.time":"2.475µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T02:55:33Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"3.591µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T02:55:34Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"4.461µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T02:55:35Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"3.256µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T02:55:41Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"3.313µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T02:55:45Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"2.781µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T02:55:46Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:05:02Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:05:02Z"}
-{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:05:02Z"}
-{"fields.time":"3.782µs","level":"info","method":"GET","msg":"Pong ответ успешно отправлен","path":"/api/ping","status":200,"time":"2025-02-11T03:05:13Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"4.906646ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью postgreSQL","path":"/api/merch","status":200,"time":"2025-02-11T03:05:22Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"6.751564ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/merch","status":200,"time":"2025-02-11T03:05:25Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"665.714µs","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/merch","status":200,"time":"2025-02-11T03:05:27Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"121.709994ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T03:06:47Z","userID":"25d05440-dc0d-4925-a96d-2787ce215318"}
-{"fields.time":"211.029545ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:06:47Z","userID":"25d05440-dc0d-4925-a96d-2787ce215318"}
-{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:08:16Z"}
-{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:08:16Z"}
-{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:08:16Z"}
-{"fields.time":"173.372636ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T03:08:21Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"268.883316ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:08:21Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"114.257047ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:08:36Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"error":"crypto/bcrypt: hashedPassword is not the hash of the given password","fields.time":"94.879285ms","level":"warning","method":"POST","msg":"Неверный пароль на аккаунте у пользователя: GoodCat9909","path":"/api/auth","status":401,"time":"2025-02-11T03:08:51Z","userID":"00000000-0000-0000-0000-000000000000"}
-{"fields.time":"132.762731ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:09:06Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"779.472µs","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/admin/merch","status":200,"time":"2025-02-11T03:09:25Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"5.365701ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/admin/merch","status":200,"time":"2025-02-11T03:09:38Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"539.467µs","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/admin/merch","status":200,"time":"2025-02-11T03:09:39Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"1.042559ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/admin/merch","status":200,"time":"2025-02-11T03:09:41Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"1.160612ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью redis","path":"/api/admin/merch","status":200,"time":"2025-02-11T03:09:42Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"108.8039ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:09:46Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
-{"fields.time":"136.522422ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:09:47Z","userID":"e7bbac32-8c41-4d2f-a59e-a0b46127d8a3"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:15:18Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:15:18Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:15:18Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:17:24Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:17:33Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:17:33Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:17:33Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:18:00Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:18:00Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:18:00Z"}
+{"fields.time":"174.466894ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T03:18:18Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"304.001978ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:18:19Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:18:44Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:18:44Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:18:44Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:25:14Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:25:14Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:25:14Z"}
+{"fields.time":"1.504711ms","level":"info","method":"GET","msg":"Список пользователей показан успешно с помощью postgreSQL","path":"/api/admin/users","status":200,"time":"2025-02-11T03:25:15Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:27:45Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:27:45Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:27:45Z"}
+{"fields.time":"263.409312ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:27:57Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:28:46Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:28:46Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:28:46Z"}
+{"fields.time":"120.385283ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:29:00Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T03:32:23Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T03:32:23Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T03:32:23Z"}
+{"fields.time":"135.316475ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:32:26Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"203.047131ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:32:29Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"error":"crypto/bcrypt: hashedPassword is not the hash of the given password","fields.time":"125.113792ms","level":"warning","method":"POST","msg":"Неверный пароль на аккаунте у пользователя: SweetShark1689","path":"/api/auth","status":401,"time":"2025-02-11T03:32:32Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"119.953695ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:32:38Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"2.281496ms","level":"info","method":"GET","msg":"Список пользователей показан успешно с помощью postgreSQL","path":"/api/admin/users","status":200,"time":"2025-02-11T03:33:09Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"117.512278ms","level":"error","method":"POST","msg":"D5a3n7ya11","path":"/api/auth","status":500,"time":"2025-02-11T03:33:57Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"156.711432ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T03:33:57Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"260.658746ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:33:57Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"117.159341ms","level":"error","method":"POST","msg":"darya@edu.hse.ru","path":"/api/auth","status":500,"time":"2025-02-11T03:34:36Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"124.709018ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T03:34:36Z","userID":"ad9fc9f3-af00-4925-9c1d-49d06ef73a15"}
+{"fields.time":"231.224155ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T03:34:36Z","userID":"ad9fc9f3-af00-4925-9c1d-49d06ef73a15"}
+{"fields.time":"731.174µs","level":"info","method":"GET","msg":"Список пользователей показан успешно с помощью redis","path":"/api/admin/users","status":200,"time":"2025-02-11T03:37:56Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"1.644238ms","level":"info","method":"GET","msg":"Список пользователей показан успешно с помощью postgreSQL","path":"/api/admin/users","status":200,"time":"2025-02-11T03:38:10Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"2.442106ms","level":"info","method":"GET","msg":"Список пользователей показан успешно с помощью redis","path":"/api/admin/users","status":200,"time":"2025-02-11T03:38:15Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"69.007766ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью postgreSQL","path":"/api/merch","status":200,"time":"2025-02-11T04:42:21Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T04:44:17Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T04:44:17Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T04:44:17Z"}

@@ -7,7 +7,7 @@ import (
 
 const (
 	ADMIN_ROLE    string = "ADMIN_ROLE"
-	EMPLOYEE_ROLE string = "EMPLOYER_ROLE"
+	EMPLOYEE_ROLE string = "EMPLOYEE_ROLE"
 )
 
 type User struct {
