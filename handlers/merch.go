@@ -6,6 +6,7 @@ import (
 	"Shop/database/models"
 	"Shop/loging"
 	"Shop/utils"
+	"context"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -15,7 +16,9 @@ import (
 func ShowMerchHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value("userID").(uuid.UUID)
-	ctx := r.Context()
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
 
 	var merches []models.Merch
 	cacheKey := "merch:all"

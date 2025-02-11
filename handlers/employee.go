@@ -5,9 +5,11 @@ import (
 	"Shop/database/models"
 	"Shop/loging"
 	"Shop/utils"
+	"context"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm/clause"
 	"net/http"
 	"time"
 )
@@ -43,6 +45,9 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value("userID").(uuid.UUID)
 
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
 	var input struct {
 		NickTaker string `json:"toUser"`
 		Coin      uint   `json:"coin"`
@@ -54,82 +59,89 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var userTaker, userSender models.User
+	if input.Coin == 0 {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Количество монет должно быть больше 0")
+		http.Error(w, "Количество монет должно быть больше 0", http.StatusBadRequest)
+		return
+	}
+
 	tx := migrations.DB.Begin()
+	committed := false
 	defer func() {
-		if r := recover(); r != nil {
+		if !committed {
 			tx.Rollback()
 		}
 	}()
 
 	var walletSender, walletTaker models.Wallet
-	if err := tx.Where("user_id = ?", userID).First(&walletSender).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелек работника кто хочет перевести деньги не найден.")
-		http.Error(w, "Кошелек работника кто хочет перевести деньги не найден.", http.StatusNotFound)
+	if err := tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).Where("user_id = ?", userID).First(&walletSender).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелек отправителя не найден")
+		http.Error(w, "Кошелек отправителя не найден.", http.StatusNotFound)
 		return
 	}
 
-	if input.Coin <= 0 {
-		loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusBadRequest, nil, startTime, "Количество монет должно быть больше 0")
-		http.Error(w, "Количество монет должно быть больше 0", http.StatusBadRequest)
-		return
-	}
 	if input.Coin > walletSender.Coin {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Количество денег у работника кто хочет перевести деньги недостаточно.")
-		http.Error(w, "Количество денег у работника кто хочет перевести деньги недостаточно.", http.StatusBadRequest)
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Недостаточно монет на балансе")
+		http.Error(w, "Недостаточно монет на балансе.", http.StatusBadRequest)
 		return
 	}
 
-	if err := tx.Where("id = ?", userID).First(&userSender).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Работник кто хочет перевести деньги не найден.")
-		http.Error(w, "Работник кто хочет перевести деньги не найден.", http.StatusNotFound)
+	var userSender, userTaker models.User
+	if err := tx.WithContext(ctx).Where("id = ?", userID).First(&userSender).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Отправитель не найден")
+		http.Error(w, "Отправитель не найден.", http.StatusNotFound)
+		return
+	}
+	if err := tx.WithContext(ctx).Where("username = ?", input.NickTaker).First(&userTaker).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Получатель не найден")
+		http.Error(w, "Получатель не найден.", http.StatusNotFound)
 		return
 	}
 
-	if err := tx.Where("username = ?", input.NickTaker).First(&userTaker).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Работник с никнеймом "+input.NickTaker+" не найден.")
-		http.Error(w, "Работник с никнеймом "+input.NickTaker+" не найден.", http.StatusNotFound)
-		return
-	}
 	if userSender.Username == userTaker.Username {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Самому себе нельзя перевести деньги.")
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Самому себе нельзя перевести деньги")
 		http.Error(w, "Самому себе нельзя перевести деньги.", http.StatusBadRequest)
 		return
 	}
 
-	if err := tx.Where("user_id = ?", userTaker.ID).First(&walletTaker).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелек работника которому хотят перевести деньги не найден.")
-		http.Error(w, "Кошелек работника которому хотят перевести деньги не найден.", http.StatusNotFound)
+	if err := tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).Where("user_id = ?", userTaker.ID).First(&walletTaker).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелек получателя не найден")
+		http.Error(w, "Кошелек получателя не найден.", http.StatusNotFound)
 		return
 	}
 
 	walletSender.Coin -= input.Coin
 	walletTaker.Coin += input.Coin
 
-	var transaction = models.Transaction{
+	if err := tx.WithContext(ctx).Save(&walletSender).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления баланса отправителя")
+		http.Error(w, "Ошибка обновления баланса отправителя.", http.StatusInternalServerError)
+		return
+	}
+	if err := tx.WithContext(ctx).Save(&walletTaker).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления баланса получателя")
+		http.Error(w, "Ошибка обновления баланса получателя.", http.StatusInternalServerError)
+		return
+	}
+
+	transaction := models.Transaction{
 		FromUser: userSender.ID,
 		ToUser:   userTaker.ID,
 		Amount:   input.Coin,
 	}
-	if err := tx.Create(&transaction).Error; err != nil {
-		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при создании транзакции перевода денег.")
-		http.Error(w, "Ошибка при создании транзакции перевода денег.", http.StatusInternalServerError)
+	if err := tx.WithContext(ctx).Create(&transaction).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка создания транзакции")
+		http.Error(w, "Ошибка создания транзакции.", http.StatusInternalServerError)
 		return
 	}
 
-	if err := tx.Save(&walletSender).Error; err != nil {
-		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при сохранении баланса кошелька у отправителя.")
-		http.Error(w, "Ошибка при сохранении баланса кошелька у отправителя.", http.StatusInternalServerError)
+	if err := tx.Commit().Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка фиксации транзакции")
+		http.Error(w, "Ошибка фиксации транзакции.", http.StatusInternalServerError)
 		return
 	}
 
-	if err := tx.Save(&walletTaker).Error; err != nil {
-		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при сохранении баланса кошелька у получателя.")
-		http.Error(w, "Ошибка при сохранении баланса кошелька у получателя.", http.StatusInternalServerError)
-		return
-	}
-
-	tx.Commit()
+	committed = true
 	utils.JSONFormat(w, r, transaction)
 }
 

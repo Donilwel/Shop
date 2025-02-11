@@ -6,6 +6,7 @@ import (
 	"Shop/database/models"
 	"Shop/loging"
 	"Shop/utils"
+	"context"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -16,7 +17,9 @@ import (
 func ShowUserHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value("userID").(uuid.UUID)
-	ctx := r.Context()
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
 
 	var users []models.User
 	cacheKey := "users:all"

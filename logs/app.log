@@ -93,3 +93,15 @@
 {"fields.time":"7.342315ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:34Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
 {"fields.time":"7.208204ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:35Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
 {"error":"record not found","fields.time":"8.720652ms","level":"warning","method":"POST","msg":"Работник с никнеймом SmartHawk4021 не найден.","path":"/api/sendCoin","status":404,"time":"2025-02-11T12:34:43Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T14:11:43Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T14:11:43Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T14:11:43Z"}
+{"error":"record not found","fields.time":"4.762747ms","level":"warning","method":"POST","msg":"Получатель не найден","path":"/api/sendCoin","status":404,"time":"2025-02-11T14:12:25Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"error":"record not found","fields.time":"3.248078ms","level":"warning","method":"POST","msg":"Получатель не найден","path":"/api/sendCoin","status":404,"time":"2025-02-11T14:12:33Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T14:13:03Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T14:13:03Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T14:13:03Z"}
+{"error":"record not found","fields.time":"4.56369ms","level":"warning","method":"POST","msg":"Получатель не найден","path":"/api/sendCoin","status":404,"time":"2025-02-11T14:13:06Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"7.171377ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги","path":"/api/sendCoin","status":400,"time":"2025-02-11T14:14:30Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"3.323048ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги","path":"/api/sendCoin","status":400,"time":"2025-02-11T14:15:25Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"1.901085ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги","path":"/api/sendCoin","status":400,"time":"2025-02-11T14:15:39Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
