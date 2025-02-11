@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 	"net/http"
@@ -145,4 +146,67 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	utils.JSONFormat(w, r, transaction)
 }
 
-func BuyItemHandler(w http.ResponseWriter, r *http.Request) {}
+func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
+	startTime := time.Now()
+	userID := r.Context().Value("userID").(uuid.UUID)
+
+	itemName := mux.Vars(r)["item"]
+
+	var merch models.Merch
+	var user models.User
+
+	tx := migrations.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Where("id = ?", userID).First(&user).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Покупатель не найден в базе данных")
+		http.Error(w, "Покупатель не найден в базе данных", http.StatusNotFound)
+		return
+	}
+	if err := tx.Where("name = ?", itemName).First(&merch).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Запрошенная вещь не существует в базе данных")
+		http.Error(w, "Запрошенная вещь не существует в базе данных", http.StatusNotFound)
+		return
+	}
+
+	var wallet models.Wallet
+	if err := tx.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелька покупателя не существует в базе данных")
+		http.Error(w, "Кошелька покупателя не существует в базе данных", http.StatusNotFound)
+		return
+	}
+
+	if wallet.Coin < merch.Price {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Недостаточно средств на кошельке у пользователя.")
+		http.Error(w, "Недостаточно средств на кошельке у пользователя.", http.StatusBadRequest)
+		return
+	}
+
+	wallet.Coin -= merch.Price
+	var purchase = models.Purchase{
+		UserID:  userID,
+		MerchID: merch.ID,
+	}
+
+	if err := tx.Save(&purchase).Error; err != nil {
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка сохранения в истории заказа.")
+		http.Error(w, "Ошибка сохранения в истории заказа.", http.StatusInternalServerError)
+		return
+	}
+	if err := tx.Save(&wallet).Error; err != nil {
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка сохранения кошелька у пользователя.")
+		http.Error(w, "Ошибка сохранения кошелька у пользователя.", http.StatusInternalServerError)
+		return
+	}
+
+	tx.Commit()
+	utils.JSONFormat(w, r, map[string]interface{}{
+		"balance":  wallet.Coin,
+		"item":     itemName,
+		"nickname": user.Username,
+	})
+}
