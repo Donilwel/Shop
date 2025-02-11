@@ -4,3 +4,29 @@
 {"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T17:25:07Z"}
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T17:25:07Z"}
 {"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T17:25:07Z"}
+{"fields.time":"122.847742ms","level":"error","method":"POST","msg":"roma@edu.hse.ru","path":"/api/auth","status":500,"time":"2025-02-11T17:28:33Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"185.583156ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T17:28:33Z","userID":"5611ab54-7cf5-4d82-ae7f-b554ca1e8eee"}
+{"fields.time":"299.031014ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T17:28:33Z","userID":"5611ab54-7cf5-4d82-ae7f-b554ca1e8eee"}
+{"error":"crypto/bcrypt: hashedPassword is not the hash of the given password","fields.time":"102.769821ms","level":"warning","method":"POST","msg":"Неверный пароль на аккаунте у пользователя: SickChicken3529","path":"/api/auth","status":401,"time":"2025-02-11T17:28:36Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"198.305822ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T17:28:48Z","userID":"5611ab54-7cf5-4d82-ae7f-b554ca1e8eee"}
+{"fields.time":"6.494636ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью postgreSQL","path":"/api/merch","status":200,"time":"2025-02-11T17:31:54Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"25.84062ms","level":"info","method":"GET","msg":"Список пользователей показан успешно с помощью postgreSQL","path":"/api/admin/users","status":200,"time":"2025-02-11T17:32:38Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T17:38:28Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T17:38:28Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T17:38:28Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T17:39:43Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T17:39:43Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T17:39:43Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T17:44:33Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T17:44:33Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T17:44:33Z"}
+{"fields.time":"4.971749ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги","path":"/api/sendCoin","status":400,"time":"2025-02-11T17:45:31Z","userID":"5611ab54-7cf5-4d82-ae7f-b554ca1e8eee"}
+{"fields.time":"105.183981ms","level":"error","method":"POST","msg":"dad@edu.hse.ru","path":"/api/auth","status":500,"time":"2025-02-11T17:45:44Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"152.581785ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-11T17:45:44Z","userID":"5e787d74-bee7-40ff-84ab-acd9db47ee24"}
+{"fields.time":"296.350049ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T17:45:44Z","userID":"5e787d74-bee7-40ff-84ab-acd9db47ee24"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T17:47:08Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T17:47:08Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T17:47:08Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T17:47:41Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T17:47:41Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T17:47:41Z"}

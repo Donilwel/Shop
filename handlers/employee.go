@@ -20,26 +20,63 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 
 	var wallet models.Wallet
 	if err := migrations.DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
-
+		http.Error(w, "Failed to retrieve wallet", http.StatusInternalServerError)
+		return
 	}
-	var purchases []models.Purchase
-	if err := migrations.DB.Where("user_id = ?", userID).Find(&purchases).Error; err != nil {
 
+	var inventory []struct {
+		Type     string `json:"type"`
+		Quantity int    `json:"quantity"`
 	}
-	var transactionsFrom []models.Transaction
-	var transactionsTo []models.Transaction
-	if err := migrations.DB.Where("from_user = ?", userID).Find(&transactionsFrom).Error; err != nil {
+	err := migrations.DB.Table("purchases").
+		Select("merches.name as type, COUNT(purchases.id) as quantity").
+		Joins("JOIN merches ON purchases.merch_id = merches.id").
+		Where("purchases.user_id = ?", userID).
+		Group("merches.id, merches.name").
+		Find(&inventory).Error
+	if err != nil {
+		http.Error(w, "Failed to retrieve inventory", http.StatusInternalServerError)
+		return
+	}
 
+	var received []struct {
+		FromUser string `json:"fromUser"`
+		Amount   uint   `json:"amount"`
 	}
-	if err := migrations.DB.Where("to_user = ?", userID).Find(&transactionsTo).Error; err != nil {
+	err = migrations.DB.Table("transactions").
+		Select("users.username as from_user, transactions.amount").
+		Joins("JOIN users ON transactions.from_user = users.id").
+		Where("transactions.to_user = ?", userID).
+		Find(&received).Error
+	if err != nil {
+		http.Error(w, "Failed to retrieve received transactions", http.StatusInternalServerError)
+		return
+	}
 
+	var sent []struct {
+		ToUser string `json:"toUser"`
+		Amount uint   `json:"amount"`
 	}
-	utils.JSONFormat(w, r, map[string]interface{}{
-		"coins":             wallet.Coin,
-		"purchases":         purchases,
-		"transactions":      transactionsTo,
-		"transactions_from": transactionsFrom,
-	})
+	err = migrations.DB.Table("transactions").
+		Select("users.username as to_user, transactions.amount").
+		Joins("JOIN users ON transactions.to_user = users.id").
+		Where("transactions.from_user = ?", userID).
+		Find(&sent).Error
+	if err != nil {
+		http.Error(w, "Failed to retrieve sent transactions", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"coins":     wallet.Coin,
+		"inventory": inventory,
+		"coinHistory": map[string]interface{}{
+			"received": received,
+			"sent":     sent,
+		},
+	}
+
+	utils.JSONFormat(w, r, response)
 }
 
 func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
