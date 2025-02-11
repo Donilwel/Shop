@@ -91,6 +91,11 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Работник с никнеймом "+input.NickTaker+" не найден.", http.StatusNotFound)
 		return
 	}
+	if userSender.Username == userTaker.Username {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Самому себе нельзя перевести деньги.")
+		http.Error(w, "Самому себе нельзя перевести деньги.", http.StatusBadRequest)
+		return
+	}
 
 	if err := tx.Where("user_id = ?", userTaker.ID).First(&walletTaker).Error; err != nil {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелек работника которому хотят перевести деньги не найден.")

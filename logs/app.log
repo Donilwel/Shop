@@ -76,3 +76,20 @@
 {"fields.time":"2.072379ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:46Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
 {"fields.time":"2.738811ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:57Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
 {"fields.time":"4.1487ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:27:58Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T12:29:42Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T12:29:42Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T12:29:42Z"}
+{"fields.time":"1.552366ms","level":"warning","method":"POST","msg":"Количество денег у работника кто хочет перевести деньги недостаточно.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:30:20Z","userID":"2c025918-cdab-4413-a82d-17350baf17f1"}
+{"fields.time":"187.389498ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-11T12:31:08Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T12:34:08Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T12:34:08Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T12:34:08Z"}
+{"fields.time":"8.598871ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:09Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-11T12:34:28Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-11T12:34:28Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-11T12:34:28Z"}
+{"fields.time":"3.445539ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:32Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"5.657361ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:33Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"7.342315ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:34Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"fields.time":"7.208204ms","level":"warning","method":"POST","msg":"Самому себе нельзя перевести деньги.","path":"/api/sendCoin","status":400,"time":"2025-02-11T12:34:35Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
+{"error":"record not found","fields.time":"8.720652ms","level":"warning","method":"POST","msg":"Работник с никнеймом SmartHawk4021 не найден.","path":"/api/sendCoin","status":404,"time":"2025-02-11T12:34:43Z","userID":"ba31b0ed-4bda-4b70-8229-37e0a13fe542"}
