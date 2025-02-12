@@ -12,7 +12,7 @@ var adjectives = []string{"Fast", "Crazy", "Cool", "Brave", "Smart", "Lucky", "W
 var nouns = []string{"Tiger", "Eagle", "Wolf", "Shark", "Panther", "Hawk", "Dragon", "Chicken", "Pow", "Dog", "Cat", "Pig", "Lion"}
 
 func GenerateUsername() string {
-	rand.Seed(time.Now().UnixNano())
+	rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		adj := adjectives[rand.Intn(len(adjectives))]
 		noun := nouns[rand.Intn(len(nouns))]

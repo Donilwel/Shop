@@ -12,6 +12,13 @@ import (
 	"time"
 )
 
+type contextKey string
+
+const (
+	userIDKey contextKey = "userID"
+	roleKey   contextKey = "role"
+)
+
 var jwtSecret = []byte("h8hjfdjiudfgh487&849fd04kfmfdo32nifsdnf3")
 
 func GenerateJWT(userId uuid.UUID, email string) (string, error) {
@@ -89,8 +96,8 @@ func AuthMiddleware(requiredRole string) func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "userID", userID)
-			ctx = context.WithValue(ctx, "role", role)
+			ctx := context.WithValue(r.Context(), userIDKey, userID)
+			ctx = context.WithValue(ctx, roleKey, role)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)

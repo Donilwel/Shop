@@ -1,0 +1,46 @@
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - typecheck
+    - gocritic
+    - gofmt
+    - gocyclo
+    - revive
+    - prealloc
+  disable:
+    - scopelint
+    - lll
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  revive:
+    severity: warning
+    confidence: 0.8
+  gofmt:
+    simplify: true
+
+exclude-dirs:
+  - vendor
+  - third_party
+  - migrations
+
+max-issues-per-linter: 50
+max-same-issues: 5
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+cache:
+  enabled: true
+  dir: ~/.cache/golangci-lint

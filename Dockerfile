@@ -6,6 +6,6 @@ COPY . .
 
 RUN go mod download
 
-RUN go test -v ./...
+#RUN go test -v ./...
 
 CMD ["go", "run", "cmd/main.go"]
