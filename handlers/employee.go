@@ -152,12 +152,12 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	walletTaker.Coin += input.Coin
 
 	if err := tx.WithContext(ctx).Save(&walletSender).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления баланса отправителя")
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления баланса отправителя")
 		http.Error(w, "Ошибка обновления баланса отправителя.", http.StatusInternalServerError)
 		return
 	}
 	if err := tx.WithContext(ctx).Save(&walletTaker).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления баланса получателя")
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления баланса получателя")
 		http.Error(w, "Ошибка обновления баланса получателя.", http.StatusInternalServerError)
 		return
 	}
@@ -168,13 +168,13 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 		Amount:   input.Coin,
 	}
 	if err := tx.WithContext(ctx).Create(&transaction).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка создания транзакции")
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка создания транзакции")
 		http.Error(w, "Ошибка создания транзакции.", http.StatusInternalServerError)
 		return
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка фиксации транзакции")
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка фиксации транзакции")
 		http.Error(w, "Ошибка фиксации транзакции.", http.StatusInternalServerError)
 		return
 	}
