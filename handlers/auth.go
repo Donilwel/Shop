@@ -110,7 +110,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	userID, _ := r.Context().Value("userID").(uuid.UUID)
+	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

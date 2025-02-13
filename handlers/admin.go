@@ -17,7 +17,7 @@ import (
 
 func ShowUserHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	userID, _ := r.Context().Value("userID").(uuid.UUID)
+	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
@@ -54,7 +54,7 @@ func ShowUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	userID, _ := r.Context().Value("userID").(uuid.UUID)
+	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
@@ -116,7 +116,7 @@ func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 
-	userID, ok := r.Context().Value("userID").(uuid.UUID)
+	userID, ok := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 	if !ok {
 		http.Error(w, "Не удалось получить userID", http.StatusUnauthorized)
 		return

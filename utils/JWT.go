@@ -12,9 +12,11 @@ import (
 	"time"
 )
 
+type contextKey string
+
 const (
-	userIDKey string = "userID"
-	roleKey   string = "role"
+	UserIDKey contextKey = "userID"
+	roleKey   contextKey = "role"
 )
 
 var jwtSecret = []byte("h8hjfdjiudfgh487&849fd04kfmfdo32nifsdnf3")
@@ -94,7 +96,7 @@ func AuthMiddleware(requiredRole string) func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), userIDKey, userID)
+			ctx := context.WithValue(r.Context(), UserIDKey, userID)
 			ctx = context.WithValue(ctx, roleKey, role)
 			r = r.WithContext(ctx)
 

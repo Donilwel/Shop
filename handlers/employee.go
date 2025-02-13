@@ -20,7 +20,7 @@ import (
 func InformationHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	ctx := r.Context()
-	userID, _ := ctx.Value("userID").(uuid.UUID)
+	userID, _ := ctx.Value(utils.UserIDKey).(uuid.UUID)
 	cacheTTL := 5 * time.Minute // Время жизни кэша
 
 	walletCacheKey := fmt.Sprintf("wallet:%s", userID)
@@ -114,7 +114,7 @@ func getSource(fromCache bool) string {
 
 func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	userID, _ := r.Context().Value("userID").(uuid.UUID)
+	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
@@ -218,7 +218,7 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 
 func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	userID := r.Context().Value("userID").(uuid.UUID)
+	userID := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	itemName := mux.Vars(r)["item"]
 
