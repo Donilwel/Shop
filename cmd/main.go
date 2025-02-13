@@ -48,6 +48,7 @@ func main() {
 	adminRouter.HandleFunc("/merch", handlers.ShowMerchHandler).Methods("GET")
 	adminRouter.HandleFunc("/users", handlers.ShowUserHandler).Methods("GET")
 	adminRouter.HandleFunc("/users/{username}", handlers.PutMoneyHandler).Methods("POST")
+	adminRouter.HandleFunc("/merch/new", handlers.AddOrChangeMerchHandler).Methods("POST")
 
 	server := &http.Server{
 		Addr:    ":8080",

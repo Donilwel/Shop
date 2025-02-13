@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"Shop/config"
 	"Shop/database/migrations"
 	"Shop/database/models"
 	"Shop/loging"
 	"Shop/utils"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -16,56 +18,79 @@ import (
 )
 
 func InformationHandler(w http.ResponseWriter, r *http.Request) {
-	userID, _ := r.Context().Value("userID").(uuid.UUID)
+	startTime := time.Now()
+	ctx := r.Context()
+	userID, _ := ctx.Value("userID").(uuid.UUID)
+	cacheTTL := 5 * time.Minute // Время жизни кэша
 
-	var wallet models.Wallet
-	if err := migrations.DB.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
+	walletCacheKey := fmt.Sprintf("wallet:%s", userID)
+	inventoryCacheKey := fmt.Sprintf("inventory:%s", userID)
+	receivedCacheKey := fmt.Sprintf("received:%s", userID)
+	sentCacheKey := fmt.Sprintf("sent:%s", userID)
+
+	var walletSlice []models.Wallet
+	fromCacheWallet, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, walletCacheKey,
+		migrations.DB.Where("user_id = ?", userID), &walletSlice, cacheTTL)
+	if err != nil {
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при получении кошелька")
 		http.Error(w, "Failed to retrieve wallet", http.StatusInternalServerError)
 		return
 	}
+	var wallet models.Wallet
+	if len(walletSlice) > 0 {
+		wallet = walletSlice[0]
+	}
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Кошелек загружен из "+getSource(fromCacheWallet))
 
 	var inventory []struct {
 		Type     string `json:"type"`
 		Quantity int    `json:"quantity"`
 	}
-	err := migrations.DB.Table("purchases").
-		Select("merches.name as type, COUNT(purchases.id) as quantity").
-		Joins("JOIN merches ON purchases.merch_id = merches.id").
-		Where("purchases.user_id = ?", userID).
-		Group("merches.id, merches.name").
-		Find(&inventory).Error
+	fromCacheInventory, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, inventoryCacheKey,
+		migrations.DB.Table("purchases").
+			Select("merches.name as type, COUNT(purchases.id) as quantity").
+			Joins("JOIN merches ON purchases.merch_id = merches.id").
+			Where("purchases.user_id = ?", userID).
+			Group("merches.id, merches.name"), &inventory, cacheTTL)
 	if err != nil {
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при получении инвентаря")
 		http.Error(w, "Failed to retrieve inventory", http.StatusInternalServerError)
 		return
 	}
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Инвентарь загружен из "+getSource(fromCacheInventory))
 
 	var received []struct {
 		FromUser string `json:"fromUser"`
 		Amount   uint   `json:"amount"`
 	}
-	err = migrations.DB.Table("transactions").
-		Select("users.username as from_user, transactions.amount").
-		Joins("JOIN users ON transactions.from_user = users.id").
-		Where("transactions.to_user = ?", userID).
-		Find(&received).Error
+	fromCacheReceived, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, receivedCacheKey,
+		migrations.DB.Table("transactions").
+			Select("users.username as from_user, transactions.amount").
+			Joins("JOIN users ON transactions.from_user = users.id").
+			Where("transactions.to_user = ?", userID), &received, cacheTTL)
 	if err != nil {
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при получении полученных транзакций")
 		http.Error(w, "Failed to retrieve received transactions", http.StatusInternalServerError)
 		return
 	}
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+getSource(fromCacheReceived))
 
 	var sent []struct {
 		ToUser string `json:"toUser"`
 		Amount uint   `json:"amount"`
 	}
-	err = migrations.DB.Table("transactions").
-		Select("users.username as to_user, transactions.amount").
-		Joins("JOIN users ON transactions.to_user = users.id").
-		Where("transactions.from_user = ?", userID).
-		Find(&sent).Error
+	fromCacheSent, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, sentCacheKey,
+		migrations.DB.Table("transactions").
+			Select("users.username as to_user, transactions.amount").
+			Joins("JOIN users ON transactions.to_user = users.id").
+			Where("transactions.from_user = ?", userID), &sent, cacheTTL)
 	if err != nil {
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при получении отправленных транзакций")
 		http.Error(w, "Failed to retrieve sent transactions", http.StatusInternalServerError)
 		return
 	}
+
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+getSource(fromCacheSent))
 
 	response := map[string]interface{}{
 		"coins":     wallet.Coin,
@@ -77,6 +102,14 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.JSONFormat(w, r, response)
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Информация показана успешно")
+}
+
+func getSource(fromCache bool) string {
+	if fromCache {
+		return "Redis"
+	}
+	return "PostgreSQL"
 }
 
 func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
@@ -240,7 +273,12 @@ func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка фиксации транзакции")
+		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
+		return
+	}
 	utils.JSONFormat(w, r, map[string]interface{}{
 		"balance":  wallet.Coin,
 		"item":     itemName,

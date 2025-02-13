@@ -105,12 +105,23 @@ func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка фиксации транзакции")
+		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
+		return
+	}
 }
 
 func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
-	userID, _ := r.Context().Value("userID").(uuid.UUID)
+
+	userID, ok := r.Context().Value("userID").(uuid.UUID)
+	if !ok {
+		http.Error(w, "Не удалось получить userID", http.StatusUnauthorized)
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
@@ -118,19 +129,22 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 		Type  string `json:"type"`
 		Price uint   `json:"price"`
 	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, err, startTime, "Некорректное тело запроса")
+		http.Error(w, "Некорректное тело запроса", http.StatusBadRequest)
+		return
+	}
+
 	if input.Type == "" {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Тип мерча не должен быть пустым")
 		http.Error(w, "Тип мерча не должен быть пустым", http.StatusBadRequest)
 		return
 	}
+
 	if input.Price == 0 || input.Price > 1000 {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Цена мерча должна быть в диапазоне от 1 до 1000 включительно")
 		http.Error(w, "Цена мерча должна быть в диапазоне от 1 до 1000 включительно", http.StatusBadRequest)
-		return
-	}
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, err, startTime, "Некорректное тело запроса")
-		http.Error(w, "Некорректное тело запроса", http.StatusBadRequest)
 		return
 	}
 
@@ -140,15 +154,46 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 			tx.Rollback()
 		}
 	}()
-	// тут надо будет добавить if мерч с типом существует то тогда просто апдейтнуть цену - иначе - то что ниже
-	var merch = models.Merch{
-		Name:  input.Type,
-		Price: input.Price,
+
+	var merchExist models.Merch
+	if err := tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).Where("name = ?", input.Type).First(&merchExist).Error; err != nil {
+		merch := models.Merch{
+			Name:  input.Type,
+			Price: input.Price,
+		}
+
+		if err := tx.WithContext(ctx).Create(&merch).Error; err != nil {
+			tx.Rollback()
+			loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка добавления нового мерча")
+			http.Error(w, "Ошибка добавления нового мерча", http.StatusInternalServerError)
+			return
+		}
+
+		loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Был создан новый мерч: "+input.Type)
+		http.Error(w, "Был создан новый мерч: "+input.Type, http.StatusOK)
+	} else {
+		if merchExist.Price == input.Price {
+			loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "цена мерча совпадает с заданной")
+			http.Error(w, "цена мерча совпадает с заданной", http.StatusBadRequest)
+			return
+		}
+		merchExist.Price = input.Price
+
+		if err := tx.WithContext(ctx).Save(&merchExist).Error; err != nil {
+			tx.Rollback()
+			loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка обновления цены мерча")
+			http.Error(w, "Ошибка обновления цены мерча", http.StatusInternalServerError)
+			return
+		}
+
+		loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Цена мерча "+input.Type+" была обновлена")
+		http.Error(w, "Цена мерча "+input.Type+" была обновлена", http.StatusOK)
 	}
 
-	if err := tx.WithContext(ctx).Create(&merch).Error; err != nil {
-		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка добавления нового мерча.")
-		http.Error(w, "Ошибка добавления нового мерча.", http.StatusInternalServerError)
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка фиксации транзакции")
+		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
 		return
 	}
 }

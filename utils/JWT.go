@@ -12,11 +12,9 @@ import (
 	"time"
 )
 
-type contextKey string
-
 const (
-	userIDKey contextKey = "userID"
-	roleKey   contextKey = "role"
+	userIDKey string = "userID"
+	roleKey   string = "role"
 )
 
 var jwtSecret = []byte("h8hjfdjiudfgh487&849fd04kfmfdo32nifsdnf3")
