@@ -29,6 +29,7 @@ func main() {
 	apiRouter.HandleFunc("/auth", handlers.AuthHandler).Methods("POST")
 	apiRouter.HandleFunc("/auth/logout", handlers.LogoutHandler).Methods("POST")
 	apiRouter.HandleFunc("/merch", handlers.ShowMerchHandler).Methods("GET")
+	apiRouter.HandleFunc("/users", handlers.ShowEmployeesHandler).Methods("GET")
 
 	employeeInfoRouter := apiRouter.PathPrefix("/info").Subrouter()
 	employeeInfoRouter.Use(utils.AuthMiddleware(models.EMPLOYEE_ROLE))
@@ -45,8 +46,6 @@ func main() {
 	apiRouter.HandleFunc("", handlers.InformationHandler).Methods("GET")
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(utils.AuthMiddleware(models.ADMIN_ROLE))
-	adminRouter.HandleFunc("/merch", handlers.ShowMerchHandler).Methods("GET")
-	adminRouter.HandleFunc("/users", handlers.ShowUserHandler).Methods("GET")
 	adminRouter.HandleFunc("/users/{username}", handlers.PutMoneyHandler).Methods("POST")
 	adminRouter.HandleFunc("/merch/new", handlers.AddOrChangeMerchHandler).Methods("POST")
 

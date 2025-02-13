@@ -15,15 +15,20 @@ import (
 	"time"
 )
 
-func ShowUserHandler(w http.ResponseWriter, r *http.Request) {
+func ShowEmployeesHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	var users []models.User
-	cacheKey := "users:all"
+	var users []struct {
+		ID       string `json:"id"`
+		Username string `json:"username"`
+		Email    string `json:"email"`
+	}
+
+	cacheKey := "users:employees"
 
 	select {
 	case <-ctx.Done():
@@ -32,24 +37,29 @@ func ShowUserHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 	}
 
-	fromCache, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, cacheKey, migrations.DB, &users, 5*time.Minute)
+	fromCache, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, cacheKey,
+		migrations.DB.Model(&models.User{}).
+			Select("id, username, email").
+			Where("role = ?", models.EMPLOYEE_ROLE), &users, 5*time.Minute)
 	if err != nil {
-		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при поиске пользователя.")
-		http.Error(w, "Error fetching couriers", http.StatusInternalServerError)
+		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при поиске сотрудников.")
+		http.Error(w, "Ошибка при поиске сотрудников", http.StatusInternalServerError)
 		return
 	}
 
 	if len(users) == 0 {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Пользователи не найдены")
-		http.Error(w, "Пользователи не найдены", http.StatusNotFound)
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Сотрудники не найдены")
+		http.Error(w, "Сотрудники не найдены", http.StatusNotFound)
 		return
 	}
+
 	data := "postgreSQL"
 	if fromCache {
 		data = "redis"
 	}
+
 	utils.JSONFormat(w, r, users)
-	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Список пользователей показан успешно с помощью "+data)
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Список сотрудников показан успешно с помощью "+data)
 }
 
 func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
