@@ -89,6 +89,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		tx.Commit()
 		loging.LogRequest(logrus.InfoLevel, user.ID, r, http.StatusCreated, nil, startTime, "Пользователь создан автоматически")
+		http.Error(w, "Пользователь создан автоматически", http.StatusCreated)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {

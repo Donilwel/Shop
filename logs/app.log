@@ -1,0 +1,27 @@
+{"error":"failed to connect to `host=postgres user=postgres database=shopdb`: hostname resolving error (lookup postgres: no such host)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:26:55+03:00"}
+{"error":"failed to connect to `host=postgres user=postgres database=shopdb`: hostname resolving error (lookup postgres: no such host)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:27:29+03:00"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-14T07:27:42Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-14T07:27:42Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-14T07:27:42Z"}
+{"error":"failed to connect to `host=postgres user=postgres database=shopdb`: hostname resolving error (lookup postgres: no such host)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:27:46+03:00"}
+{"error":"failed to connect to `host=postgres user=postgres database=shopdb`: hostname resolving error (lookup postgres: no such host)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:28:02+03:00"}
+{"error":"cannot parse `host=localhost user=postgres password=xxxxx dbname=123456 port=shopdb sslmode=disable%!(EXTRA string=5432)`: invalid port (strconv.ParseUint: parsing \"shopdb\": invalid syntax)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:28:41+03:00"}
+{"level":"error","msg":"Ошибка подключения к Redis","time":"2025-02-14T10:29:17+03:00"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-14T10:29:17+03:00"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-14T10:29:17+03:00"}
+{"level":"fatal","msg":"Ошибка сервера:listen tcp :8080: bind: address already in use","time":"2025-02-14T10:29:17+03:00"}
+{"error":"failed to connect to `host=localhost user=postgres database=shopdb`: dial error (dial tcp 127.0.0.1:5432: connect: connection refused)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:29:34+03:00"}
+{"error":"failed to connect to `host=localhost user=postgres database=shopdb`: dial error (dial tcp [::1]:8081: connect: cannot assign requested address)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T07:29:59Z"}
+{"error":"failed to connect to `host=localhost user=postgres database=shopdb`: dial error (dial tcp 127.0.0.1:8081: connect: connection refused)","level":"fatal","msg":"Ошибка подключения к PostgreSQL базе данных","time":"2025-02-14T10:30:08+03:00"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-14T07:30:25Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-14T07:30:25Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-14T07:30:25Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-14T07:30:33Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-14T07:30:33Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-14T07:30:33Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-14T08:05:42Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-14T08:05:42Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-14T08:05:42Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-14T08:12:26Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-14T08:12:26Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-14T08:12:26Z"}
