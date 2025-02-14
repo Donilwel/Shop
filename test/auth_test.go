@@ -1,10 +1,13 @@
 package test
 
 import (
+	"Shop/config"
 	"Shop/database/migrations"
 	"Shop/database/models"
 	"Shop/handlers"
+	"Shop/utils"
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +25,10 @@ func TestMain(m *testing.M) {
 	os.Setenv("POSTGRES_PASSWORD", "testpassword")
 	os.Setenv("POSTGRES_DATABASE", "testdb")
 	os.Setenv("POSTGRES_PORT", "5433")
+	os.Setenv("REDIS_HOST", "localhost")
+	os.Setenv("REDIS_PORT", "6379")
 	migrations.InitDB()
+	config.InitRedis()
 	os.Exit(m.Run())
 }
 
@@ -31,6 +37,11 @@ func setupTestDB() {
 		log.Fatal("Database connection is not initialized")
 	}
 	migrations.DB.Exec("DELETE FROM users")
+	migrations.DB.Exec("DELETE FROM revoked_tokens")
+	migrations.DB.Exec("DELETE FROM merches")
+	if config.Rdb != nil {
+		config.Rdb.FlushAll(context.Background())
+	}
 }
 
 func TestAuthHandler_SuccessfulLogin(t *testing.T) {
@@ -114,4 +125,51 @@ func TestAuthHandler_InvalidJSON(t *testing.T) {
 	defer res.Body.Close()
 
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+}
+
+func TestLogoutHandler_SuccessfulLogout(t *testing.T) {
+	setupTestDB()
+	userID := uuid.New()
+	token := "valid_token"
+	req := httptest.NewRequest(http.MethodPost, "/auth/logout", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	ctx := req.Context()
+	ctx = context.WithValue(ctx, utils.UserIDKey, userID)
+	req = req.WithContext(ctx)
+
+	w := httptest.NewRecorder()
+	handlers.LogoutHandler(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+
+	var revokedToken models.RevokedToken
+	err := migrations.DB.Where("token = ?", token).First(&revokedToken).Error
+	assert.NoError(t, err, "Token should be saved in revoked_tokens table")
+}
+
+func TestLogoutHandler_MissingToken(t *testing.T) {
+	setupTestDB()
+	req := httptest.NewRequest(http.MethodPost, "/auth/logout", nil)
+	w := httptest.NewRecorder()
+
+	handlers.LogoutHandler(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
+}
+
+func TestLogoutHandler_InvalidTokenFormat(t *testing.T) {
+	setupTestDB()
+	req := httptest.NewRequest(http.MethodPost, "/auth/logout", nil)
+	req.Header.Set("Authorization", "InvalidTokenFormat")
+	w := httptest.NewRecorder()
+
+	handlers.LogoutHandler(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 }
