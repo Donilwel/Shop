@@ -163,7 +163,7 @@ paths:
       summary: Добавление или изменение цены мерча
       tags:
       - Admin
-  /api/admin/users/{username}:
+  /api/admin/users:
     post:
       consumes:
       - application/json

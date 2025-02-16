@@ -204,3 +204,25 @@
 {"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-16T02:04:46Z"}
 {"level":"info","msg":"Сервер запущен успешно","time":"2025-02-16T02:04:46Z"}
 {"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-16T02:04:46Z"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-16T02:07:22Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-16T02:07:22Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-16T02:07:22Z"}
+{"fields.time":"119.453579ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:08:26Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"2.015218ms","level":"warning","method":"POST","msg":"цена мерча совпадает с заданной","path":"/api/admin/merch/new","status":400,"time":"2025-02-16T02:08:53Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"79.759µs","level":"warning","method":"POST","msg":"Цена мерча должна быть в диапазоне от 1 до 1000 включительно","path":"/api/admin/merch/new","status":400,"time":"2025-02-16T02:09:00Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-16T02:11:54Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-16T02:11:54Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-16T02:11:54Z"}
+{"fields.time":"98.951868ms","level":"error","method":"POST","msg":"dfdf","path":"/api/auth","status":500,"time":"2025-02-16T02:12:02Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"126.562694ms","level":"info","method":"POST","msg":"Пользователь создан автоматически","path":"/api/auth","status":201,"time":"2025-02-16T02:12:02Z","userID":"7e8e4ad1-c864-447d-9b15-3d7e5b739ea6"}
+{"fields.time":"218.486748ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:12:02Z","userID":"7e8e4ad1-c864-447d-9b15-3d7e5b739ea6"}
+{"fields.time":"92.188473ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:12:04Z","userID":"7e8e4ad1-c864-447d-9b15-3d7e5b739ea6"}
+{"fields.time":"97.729468ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:12:05Z","userID":"7e8e4ad1-c864-447d-9b15-3d7e5b739ea6"}
+{"fields.time":"90.471159ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:12:06Z","userID":"7e8e4ad1-c864-447d-9b15-3d7e5b739ea6"}
+{"fields.time":"15.228262ms","level":"info","method":"GET","msg":"Список мерча показан успешно с помощью postgreSQL","path":"/api/merch","status":200,"time":"2025-02-16T02:35:02Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"6.455034ms","level":"info","method":"GET","msg":"Список сотрудников показан успешно с помощью postgreSQL","path":"/api/users","status":200,"time":"2025-02-16T02:37:23Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-16T02:51:37Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-16T02:51:37Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-16T02:51:37Z"}
+{"fields.time":"97.918975ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:51:57Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"fields.time":"136.392µs","level":"warning","method":"POST","msg":"Количество монет должно быть в диапазоне от 1 до 1000 включительно","path":"/api/admin/users","status":400,"time":"2025-02-16T02:53:03Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}

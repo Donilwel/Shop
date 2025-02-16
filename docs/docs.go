@@ -79,7 +79,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/admin/users/{username}": {
+        "/api/admin/users": {
             "post": {
                 "security": [
                     {

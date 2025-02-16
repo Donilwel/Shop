@@ -54,7 +54,7 @@ func main() {
 
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(utils.AuthMiddleware(models.ADMIN_ROLE))
-	adminRouter.HandleFunc("/users/{username}", handlers.PutMoneyHandler).Methods("POST")
+	adminRouter.HandleFunc("/users", handlers.PutMoneyHandler).Methods("POST")
 	adminRouter.HandleFunc("/merch/new", handlers.AddOrChangeMerchHandler).Methods("POST")
 
 	server := &http.Server{

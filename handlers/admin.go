@@ -32,7 +32,7 @@ type SendMoney struct {
 // @Failure 400 {object} string "Некорректное тело запроса или неверное количество монет"
 // @Failure 404 {object} string "Не найден работник или кошелек получателя"
 // @Failure 500 {object} string "Ошибка обновления баланса получателя или фиксации транзакции"
-// @Router /api/admin/users/{username} [post]
+// @Router /api/admin/users [post]
 // @Security BearerAuth
 func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
