@@ -226,3 +226,8 @@
 {"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-16T02:51:37Z"}
 {"fields.time":"97.918975ms","level":"info","method":"POST","msg":"Пользователь успешно аутентифицирован","path":"/api/auth","status":200,"time":"2025-02-16T02:51:57Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
 {"fields.time":"136.392µs","level":"warning","method":"POST","msg":"Количество монет должно быть в диапазоне от 1 до 1000 включительно","path":"/api/admin/users","status":400,"time":"2025-02-16T02:53:03Z","userID":"bee9e707-ebc3-41af-8f9d-1ef007c2eb15"}
+{"level":"info","msg":"Подключение к Redis успешно","time":"2025-02-16T03:09:56Z"}
+{"level":"info","msg":"Сервер запущен успешно","time":"2025-02-16T03:09:56Z"}
+{"level":"info","msg":"Сервер успешно запущен на порту: 8080","time":"2025-02-16T03:09:56Z"}
+{"fields.time":"10.699386ms","level":"info","method":"GET","msg":"Список сотрудников показан успешно с помощью postgreSQL","path":"/api/users","status":200,"time":"2025-02-16T03:10:12Z","userID":"00000000-0000-0000-0000-000000000000"}
+{"fields.time":"853.944µs","level":"info","method":"GET","msg":"Список сотрудников показан успешно с помощью redis","path":"/api/users","status":200,"time":"2025-02-16T03:10:13Z","userID":"00000000-0000-0000-0000-000000000000"}
