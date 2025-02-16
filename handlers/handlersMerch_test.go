@@ -1,4 +1,4 @@
-package test
+package handlers_test
 
 import (
 	"Shop/database/migrations"

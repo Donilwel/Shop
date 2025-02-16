@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+// PingHandler отвечает на запрос "ping" строкой "pong".
+//
+// @Summary Проверка работоспособности сервера
+// @Description Возвращает "pong", если сервер работает корректно
+// @Tags health
+// @Accept  json
+// @Produce  plain
+// @Success 200 {string} string "pong"
+// @Failure 400 {string} string "Ошибка написания pong. Ошибка подключения"
+// @Router /api/ping [get]
 func PingHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	w.WriteHeader(http.StatusOK)

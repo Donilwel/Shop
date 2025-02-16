@@ -1,4 +1,4 @@
-package test
+package handlers_test
 
 import (
 	"Shop/config"
@@ -12,37 +12,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	os.Setenv("POSTGRES_HOST", "localhost")
-	os.Setenv("POSTGRES_USERNAME", "testuser")
-	os.Setenv("POSTGRES_PASSWORD", "testpassword")
-	os.Setenv("POSTGRES_DATABASE", "testdb")
-	os.Setenv("POSTGRES_PORT", "5433")
-	os.Setenv("REDIS_HOST", "localhost")
-	os.Setenv("REDIS_PORT", "6379")
-	migrations.InitDB()
-	config.InitRedis()
-	os.Exit(m.Run())
-}
-
-func setupTestDB() {
-	if migrations.DB == nil {
-		log.Fatal("Database connection is not initialized")
-	}
-	migrations.DB.Exec("DELETE FROM users")
-	migrations.DB.Exec("DELETE FROM revoked_tokens")
-	migrations.DB.Exec("DELETE FROM merches")
-	if config.Rdb != nil {
-		config.Rdb.FlushAll(context.Background())
-	}
-}
 
 func TestAuthHandler_SuccessfulLogin(t *testing.T) {
 	setupTestDB()
@@ -67,6 +40,8 @@ func TestAuthHandler_SuccessfulLogin(t *testing.T) {
 	handlers.AuthHandler(w, req)
 	res := w.Result()
 	defer res.Body.Close()
+	err := migrations.DB.Where("email = ?", "test@example.com").First(&user).Error
+	assert.NoError(t, err, "Пользователь должен быть создан в БД")
 
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 }
@@ -113,6 +88,10 @@ func TestAuthHandler_CreateNewUser(t *testing.T) {
 	defer res.Body.Close()
 
 	assert.Equal(t, http.StatusCreated, res.StatusCode)
+
+	var user models.User
+	err := migrations.DB.Where("email = ?", "newuser@example.com").First(&user).Error
+	assert.NoError(t, err, "Пользователь должен быть создан в БД")
 }
 
 func TestAuthHandler_InvalidJSON(t *testing.T) {
@@ -146,7 +125,11 @@ func TestLogoutHandler_SuccessfulLogout(t *testing.T) {
 
 	var revokedToken models.RevokedToken
 	err := migrations.DB.Where("token = ?", token).First(&revokedToken).Error
-	assert.NoError(t, err, "Token should be saved in revoked_tokens table")
+	assert.NoError(t, err, "Токен должен быть сохранен в таблице revoked_tokens")
+
+	exists, err := config.Rdb.Exists(context.Background(), token).Result()
+	assert.NoError(t, err)
+	assert.Equal(t, int64(0), exists, "Токен должен быть удален из Redis")
 }
 
 func TestLogoutHandler_MissingToken(t *testing.T) {

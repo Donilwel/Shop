@@ -9,12 +9,18 @@ import (
 	"Shop/utils"
 	"context"
 	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 )
 
+// @title Shop API
+// @version 1.0
+// @description API для работы с магазином
+// @host localhost:8080
+// @BasePath /api
 func main() {
 	loging.InitLogging()
 	config.LoadEnv()
@@ -23,6 +29,8 @@ func main() {
 
 	r := mux.NewRouter()
 	loging.Log.Info("Сервер запущен успешно")
+
+	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/ping", handlers.PingHandler).Methods("GET")
@@ -43,7 +51,6 @@ func main() {
 	employeeBuyItemRouter.Use(utils.AuthMiddleware(models.EMPLOYEE_ROLE))
 	employeeBuyItemRouter.HandleFunc("", handlers.BuyItemHandler).Methods("GET")
 
-	apiRouter.HandleFunc("", handlers.InformationHandler).Methods("GET")
 	adminRouter := apiRouter.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(utils.AuthMiddleware(models.ADMIN_ROLE))
 	adminRouter.HandleFunc("/users/{username}", handlers.PutMoneyHandler).Methods("POST")
