@@ -87,7 +87,7 @@ func TestAuthHandler_CreateNewUser(t *testing.T) {
 	res := w.Result()
 	defer res.Body.Close()
 
-	assert.Equal(t, http.StatusCreated, res.StatusCode)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 
 	var user models.User
 	err := migrations.DB.Where("email = ?", "newuser@example.com").First(&user).Error

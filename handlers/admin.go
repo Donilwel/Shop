@@ -168,7 +168,9 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 
 		loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Был создан новый мерч: "+input.Type)
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Был создан новый мерч: " + input.Type))
+		if _, err := w.Write([]byte("Был создан новый мерч: " + input.Type)); err != nil {
+			loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusBadRequest, nil, startTime, "Ошибка записи в write header")
+		}
 	} else {
 		if merchExist.Price == input.Price {
 			loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Цена мерча совпадает с заданной")
@@ -186,7 +188,9 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 
 		loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Цена мерча "+input.Type+" была обновлена")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Цена мерча " + input.Type + " была обновлена"))
+		if _, err := w.Write([]byte("Цена мерча " + input.Type + " была обновлена")); err != nil {
+			loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusBadRequest, nil, startTime, "Ошибка записи в write header")
+		}
 	}
 
 	if err := tx.Commit().Error; err != nil {

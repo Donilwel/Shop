@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"Shop/config"
 	"Shop/database/migrations"
 	"Shop/database/models"
 	"Shop/loging"
@@ -55,61 +56,80 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Некорректное тело запроса", http.StatusBadRequest)
 		return
 	}
-	tx := migrations.DB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	select {
-	case <-ctx.Done():
-		loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusRequestTimeout, nil, startTime, "Запрос отменен клиентом")
-		http.Error(w, "Запрос отменен", http.StatusRequestTimeout)
-		return
-	default:
-	}
 
 	var user models.User
-	if err := tx.WithContext(ctx).Where("email = ?", input.Email).First(&user).Error; err != nil {
-		if input.Email == "" || input.Password == "" {
-			loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusBadRequest, nil, startTime, "Email пользователя обязателен при первой авторизации")
-			http.Error(w, "Email пользователя обязательно при первой авторизации", http.StatusBadRequest)
+	cacheKey := "users:" + input.Email
+
+	cacheResult, err := config.Rdb.Get(ctx, cacheKey).Result()
+	if err == nil {
+		if err := json.Unmarshal([]byte(cacheResult), &user); err != nil {
+			loging.LogRequest(logrus.ErrorLevel, uuid.Nil, r, http.StatusInternalServerError, err, startTime, "Ошибка декодирования данных из кэша")
+			http.Error(w, "Ошибка при работе с кэшем", http.StatusInternalServerError)
 			return
+		}
+	} else {
+		tx := migrations.DB.Begin()
+		defer func() {
+			if r := recover(); r != nil {
+				tx.Rollback()
+			}
+		}()
+
+		select {
+		case <-ctx.Done():
+			loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusRequestTimeout, nil, startTime, "Запрос отменен клиентом")
+			http.Error(w, "Запрос отменен", http.StatusRequestTimeout)
+			return
+		default:
 		}
 
-		hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
-		if hashErr != nil {
-			loging.LogRequest(logrus.ErrorLevel, uuid.Nil, r, http.StatusInternalServerError, hashErr, startTime, "Не удалось зашифровать пароль")
-			http.Error(w, "Не удалось зашифровать пароль", http.StatusInternalServerError)
-			return
-		}
-		loging.LogRequest(logrus.ErrorLevel, uuid.Nil, r, http.StatusInternalServerError, hashErr, startTime, input.Password)
-
-		user = models.User{
-			ID:       uuid.New(),
-			Username: utils.GenerateUsername(),
-			Email:    input.Email,
-			Password: string(hashedPassword),
-		}
-		if user.Email == ADMIN_EMAIL && string(hashedPassword) == ADMIN_PASSWORD {
-			user.Role = models.ADMIN_ROLE
-		}
-		if err := tx.WithContext(ctx).Create(&user).Error; err != nil {
-			loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать пользователя")
-			http.Error(w, "Не удалось создать пользователя", http.StatusInternalServerError)
-			return
-		}
-		if user.Role != models.ADMIN_ROLE {
-			if err := tx.WithContext(ctx).Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
-				loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
-				http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
+		if err := tx.WithContext(ctx).Where("email = ?", input.Email).First(&user).Error; err != nil {
+			if input.Email == "" || input.Password == "" {
+				loging.LogRequest(logrus.WarnLevel, uuid.Nil, r, http.StatusBadRequest, nil, startTime, "Email пользователя обязателен при первой авторизации")
+				http.Error(w, "Email пользователя обязательно при первой авторизации", http.StatusBadRequest)
 				return
 			}
+
+			hashedPassword, hashErr := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+			if hashErr != nil {
+				loging.LogRequest(logrus.ErrorLevel, uuid.Nil, r, http.StatusInternalServerError, hashErr, startTime, "Не удалось зашифровать пароль")
+				http.Error(w, "Не удалось зашифровать пароль", http.StatusInternalServerError)
+				return
+			}
+
+			user = models.User{
+				ID:       uuid.New(),
+				Username: utils.GenerateUsername(),
+				Email:    input.Email,
+				Password: string(hashedPassword),
+			}
+
+			// Проверка на администратора
+			if user.Email == ADMIN_EMAIL && string(hashedPassword) == ADMIN_PASSWORD {
+				user.Role = models.ADMIN_ROLE
+			}
+
+			// Создание пользователя в базе данных
+			if err := tx.WithContext(ctx).Create(&user).Error; err != nil {
+				loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать пользователя")
+				http.Error(w, "Не удалось создать пользователя", http.StatusInternalServerError)
+				return
+			}
+
+			if user.Role != models.ADMIN_ROLE {
+				if err := tx.WithContext(ctx).Create(&models.Wallet{UserID: user.ID, Coin: 1000}).Error; err != nil {
+					loging.LogRequest(logrus.ErrorLevel, user.ID, r, http.StatusInternalServerError, err, startTime, "Не удалось создать кошелек пользователя с ником "+user.Username)
+					http.Error(w, "Не удалось создать кошелек пользователя с ником "+user.Username, http.StatusInternalServerError)
+					return
+				}
+			}
+
+			tx.Commit()
+			loging.LogRequest(logrus.InfoLevel, user.ID, r, http.StatusCreated, nil, startTime, "Пользователь создан автоматически")
+
+			userJson, _ := json.Marshal(user)
+			config.Rdb.Set(ctx, cacheKey, userJson, 10*time.Minute)
 		}
-		tx.Commit()
-		loging.LogRequest(logrus.InfoLevel, user.ID, r, http.StatusCreated, nil, startTime, "Пользователь создан автоматически")
-		w.WriteHeader(http.StatusCreated)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
