@@ -15,7 +15,7 @@ import (
 )
 
 func TestShowMerchHandler_Success(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 	merch := models.Merch{Name: "TestMerch", Price: 100}
 	migrations.DB.Create(&merch)
@@ -35,7 +35,7 @@ func TestShowMerchHandler_Success(t *testing.T) {
 }
 
 func TestShowMerchHandler_NotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 
 	req := httptest.NewRequest(http.MethodGet, "/merch", nil)
@@ -52,7 +52,7 @@ func TestShowMerchHandler_NotFound(t *testing.T) {
 }
 
 func TestShowMerchHandler_Timeout(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)

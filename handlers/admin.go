@@ -153,7 +153,7 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	var merchExist models.Merch
-	if err := tx.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).Where("name = ?", input.Type).First(&merchExist).Error; err != nil {
+	if err := tx.WithContext(ctx).Where("name = ?", input.Type).First(&merchExist).Error; err != nil {
 		merch := models.Merch{
 			Name:  input.Type,
 			Price: input.Price,
@@ -167,11 +167,12 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Был создан новый мерч: "+input.Type)
-		http.Error(w, "Был создан новый мерч: "+input.Type, http.StatusOK)
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Был создан новый мерч: " + input.Type))
 	} else {
 		if merchExist.Price == input.Price {
-			loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "цена мерча совпадает с заданной")
-			http.Error(w, "цена мерча совпадает с заданной", http.StatusBadRequest)
+			loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, nil, startTime, "Цена мерча совпадает с заданной")
+			http.Error(w, "Цена мерча совпадает с заданной", http.StatusBadRequest)
 			return
 		}
 		merchExist.Price = input.Price
@@ -184,7 +185,8 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Цена мерча "+input.Type+" была обновлена")
-		http.Error(w, "Цена мерча "+input.Type+" была обновлена", http.StatusOK)
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Цена мерча " + input.Type + " была обновлена"))
 	}
 
 	if err := tx.Commit().Error; err != nil {

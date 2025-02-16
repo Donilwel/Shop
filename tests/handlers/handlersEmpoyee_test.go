@@ -16,7 +16,7 @@ import (
 )
 
 func TestShowEmployeesHandler_Success(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 
 	employee := models.User{
@@ -41,7 +41,7 @@ func TestShowEmployeesHandler_Success(t *testing.T) {
 }
 
 func TestShowEmployeesHandler_NotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 
 	req := httptest.NewRequest(http.MethodGet, "/users", nil)
@@ -58,7 +58,7 @@ func TestShowEmployeesHandler_NotFound(t *testing.T) {
 }
 
 func TestInformationHandler_Success(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 
 	user := models.User{
@@ -95,7 +95,7 @@ func TestInformationHandler_Success(t *testing.T) {
 }
 
 func TestInformationHandler_PartialData(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 	userID := uuid.New()
 
 	user := models.User{
@@ -126,7 +126,7 @@ func TestInformationHandler_PartialData(t *testing.T) {
 }
 
 func TestSendCoinHandler_Success(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	senderID := uuid.New()
 	receiver := models.User{ID: uuid.New(), Username: "receiver", Email: "receiver@example.com"}
@@ -160,7 +160,7 @@ func TestSendCoinHandler_Success(t *testing.T) {
 }
 
 func TestSendCoinHandler_NotEnoughCoins(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	senderID := uuid.New()
 	receiver := models.User{ID: uuid.New(), Username: "receiver", Email: "receiver@example.com"}
@@ -189,7 +189,7 @@ func TestSendCoinHandler_NotEnoughCoins(t *testing.T) {
 }
 
 func TestSendCoinHandler_RecipientNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	senderID := uuid.New()
 	sender := models.User{ID: senderID, Username: "sender"}
@@ -215,7 +215,7 @@ func TestSendCoinHandler_RecipientNotFound(t *testing.T) {
 }
 
 func TestSendCoinHandler_SenderNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	receiver := models.User{ID: uuid.New(), Username: "receiver"}
 	migrations.DB.Create(&receiver)
@@ -240,7 +240,7 @@ func TestSendCoinHandler_SenderNotFound(t *testing.T) {
 }
 
 func TestSendCoinHandler_JWTNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	senderID := uuid.New()
 	receiver := models.User{ID: uuid.New(), Username: "receiver", Email: "receiver@example.com"}
@@ -268,7 +268,7 @@ func TestSendCoinHandler_JWTNotFound(t *testing.T) {
 }
 
 func TestSendCoinHandler_SendYourself(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	senderID := uuid.New()
 	receiver := models.User{ID: uuid.New(), Username: "receiver", Email: "receiver@example.com"}
@@ -297,7 +297,7 @@ func TestSendCoinHandler_SendYourself(t *testing.T) {
 }
 
 func TestBuyItemHandler_UserNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	userID := uuid.New()
 	itemName := "TestItem"
@@ -315,7 +315,7 @@ func TestBuyItemHandler_UserNotFound(t *testing.T) {
 }
 
 func TestBuyItemHandler_ItemNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "buyer", Email: "byuer@example.com"}
 	migrations.DB.Create(&user)
@@ -351,7 +351,7 @@ func TestGetSource(t *testing.T) {
 }
 
 func TestBuyItemHandler_WalletNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	merch := models.Merch{Name: "TestMerch", Price: 100}
 	migrations.DB.Create(&merch)
@@ -374,7 +374,7 @@ func TestBuyItemHandler_WalletNotFound(t *testing.T) {
 }
 
 //func TestBuyItemHandler_InsufficientFunds(t *testing.T) {
-//	setupTestDB()
+//	SetupTestDB()
 //
 //	user := models.User{ID: uuid.New(), Username: "buyer"}
 //	migrations.DB.Create(&user)
@@ -396,7 +396,7 @@ func TestBuyItemHandler_WalletNotFound(t *testing.T) {
 //}
 //
 //func TestBuyItemHandler_Success(t *testing.T) {
-//	setupTestDB()
+//	SetupTestDB()
 //
 //	// Создаем мерч
 //	merch := models.Merch{Name: "TestItem", Price: 50}

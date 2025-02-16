@@ -16,7 +16,7 @@ import (
 )
 
 func TestPutMoneyHandler_Success(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	// Создание пользователя и кошелька
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
@@ -67,7 +67,7 @@ func TestPutMoneyHandler_InvalidRequestBody(t *testing.T) {
 }
 
 func TestPutMoneyHandler_InvalidCoinAmount(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -97,7 +97,7 @@ func TestPutMoneyHandler_InvalidCoinAmount(t *testing.T) {
 }
 
 func TestPutMoneyHandler_UserNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -127,7 +127,7 @@ func TestPutMoneyHandler_UserNotFound(t *testing.T) {
 }
 
 func TestPutMoneyHandler_WalletNotFound(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -160,7 +160,7 @@ func TestPutMoneyHandler_WalletNotFound(t *testing.T) {
 }
 
 func TestAddOrChangeMerchHandler_Success_Add(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -192,7 +192,7 @@ func TestAddOrChangeMerchHandler_Success_Add(t *testing.T) {
 }
 
 func TestAddOrChangeMerchHandler_Success_Update(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -233,12 +233,12 @@ func TestAddOrChangeMerchHandler_InvalidRequestBody(t *testing.T) {
 	w := httptest.NewRecorder()
 	handlers.AddOrChangeMerchHandler(w, req)
 
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
 	assert.Contains(t, w.Body.String(), "Не удалось получить userID")
 }
 
 func TestAddOrChangeMerchHandler_InvalidPrice(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -266,7 +266,7 @@ func TestAddOrChangeMerchHandler_InvalidPrice(t *testing.T) {
 }
 
 func TestAddOrChangeMerchHandler_TypeEmpty(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -294,7 +294,7 @@ func TestAddOrChangeMerchHandler_TypeEmpty(t *testing.T) {
 }
 
 func TestAddOrChangeMerchHandler_MerchAlreadyExists(t *testing.T) {
-	setupTestDB()
+	SetupTestDB()
 
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
@@ -321,5 +321,5 @@ func TestAddOrChangeMerchHandler_MerchAlreadyExists(t *testing.T) {
 	handlers.AddOrChangeMerchHandler(w, req)
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Contains(t, w.Body.String(), "цена мерча совпадает с заданной")
+	assert.Contains(t, w.Body.String(), "Цена мерча совпадает с заданной")
 }

@@ -27,7 +27,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func setupTestDB() {
+func SetupTestDB() {
 	if migrations.DB == nil {
 		log.Fatal("Database connection is not initialized")
 	}
