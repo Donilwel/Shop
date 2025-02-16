@@ -360,7 +360,6 @@ func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(utils.UserIDKey).(uuid.UUID)
 
 	itemName := mux.Vars(r)["item"]
-
 	var merch models.Merch
 	var user models.User
 

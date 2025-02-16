@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -373,85 +374,43 @@ func TestBuyItemHandler_WalletNotFound(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "Кошелька покупателя не существует в базе данных")
 }
 
-//func TestBuyItemHandler_InsufficientFunds(t *testing.T) {
-//	SetupTestDB()
-//
-//	user := models.User{ID: uuid.New(), Username: "buyer"}
-//	migrations.DB.Create(&user)
-//	merch := models.Merch{Name: "TestItem", Price: 50}
-//	migrations.DB.Create(&merch)
-//	wallet := models.Wallet{UserID: user.ID, Coin: 10}
-//	migrations.DB.Create(&wallet)
-//
-//	r := httptest.NewRequest(http.MethodGet, "/api/buy/"+merch.Name, nil)
-//	ctx := r.Context()
-//	ctx = context.WithValue(ctx, utils.UserIDKey, user.ID)
-//	r = r.WithContext(ctx)
-//	w := httptest.NewRecorder()
-//
-//	handlers.BuyItemHandler(w, r)
-//
-//	assert.Equal(t, http.StatusBadRequest, w.Code)
-//	assert.Contains(t, w.Body.String(), "Недостаточно средств на кошельке у пользователя.")
-//}
-//
-//func TestBuyItemHandler_Success(t *testing.T) {
-//	SetupTestDB()
-//
-//	// Создаем мерч
-//	merch := models.Merch{Name: "TestItem", Price: 50}
-//	err := migrations.DB.Create(&merch).Error
-//	if err != nil {
-//		t.Fatalf("Ошибка при создании мерча: %v", err)
-//	}
-//
-//	// Создаем пользователя
-//	user := models.User{ID: uuid.New(), Username: "buyer", Email: "buyer@example.com"}
-//	err = migrations.DB.Create(&user).Error
-//	if err != nil {
-//		t.Fatalf("Ошибка при создании пользователя: %v", err)
-//	}
-//
-//	// Создаем кошелек для пользователя
-//	wallet := models.Wallet{UserID: user.ID, Coin: 100}
-//	err = migrations.DB.Create(&wallet).Error
-//	if err != nil {
-//		t.Fatalf("Ошибка при создании кошелька: %v", err)
-//	}
-//
-//	// Проверяем, что данные действительно созданы
-//	var createdMerch models.Merch
-//	err = migrations.DB.First(&createdMerch, "name = ?", "TestItem").Error
-//	if err != nil {
-//		t.Fatalf("Ошибка при проверке существования мерча: %v", err)
-//	}
-//
-//	var createdWallet models.Wallet
-//	err = migrations.DB.First(&createdWallet, "user_id = ?", user.ID).Error
-//	if err != nil {
-//		t.Fatalf("Ошибка при проверке существования кошелька: %v", err)
-//	}
-//
-//	// Запрос для покупки
-//	r := httptest.NewRequest(http.MethodGet, "/api/buy/TestItem", nil)
-//	ctx := r.Context()
-//	ctx = context.WithValue(ctx, utils.UserIDKey, user.ID)
-//	r = r.WithContext(ctx)
-//	w := httptest.NewRecorder()
-//
-//	// Выполнение обработчика
-//	handlers.BuyItemHandler(w, r)
-//
-//	// Проверяем ответ
-//	assert.Equal(t, http.StatusOK, w.Code)
-//
-//	// Проверяем, что баланс уменьшился
-//	var updatedWallet models.Wallet
-//	err = migrations.DB.First(&updatedWallet, "user_id = ?", user.ID).Error
-//	if err != nil {
-//		t.Fatalf("Ошибка при получении обновленного кошелька: %v", err)
-//	}
-//
-//	// Баланс должен уменьшиться на цену товара
-//	assert.Equal(t, uint(0x64), updatedWallet.Coin)
-//}
+func TestBuyItemHandler_Success(t *testing.T) {
+	SetupTestDB()
+	r := mux.NewRouter()
+	r.HandleFunc("/api/buy/{item}", handlers.BuyItemHandler).Methods("GET")
+
+	merch := models.Merch{Name: "TestItem", Price: 50}
+	err := migrations.DB.Create(&merch).Error
+	if err != nil {
+		t.Fatalf("Ошибка при создании товара: %v", err)
+	}
+
+	user := models.User{ID: uuid.New(), Username: "buyer", Email: "buyer@example.com"}
+	err = migrations.DB.Create(&user).Error
+	if err != nil {
+		t.Fatalf("Ошибка при создании пользователя: %v", err)
+	}
+
+	wallet := models.Wallet{UserID: user.ID, Coin: 100}
+	err = migrations.DB.Create(&wallet).Error
+	if err != nil {
+		t.Fatalf("Ошибка при создании кошелька: %v", err)
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/api/buy/TestItem", nil)
+	ctx := req.Context()
+	ctx = context.WithValue(ctx, utils.UserIDKey, user.ID)
+	req = req.WithContext(ctx)
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var updatedWallet models.Wallet
+	err = migrations.DB.First(&updatedWallet, "user_id = ?", user.ID).Error
+	if err != nil {
+		t.Fatalf("Ошибка при получении обновленного кошелька: %v", err)
+	}
+	assert.Equal(t, uint(50), updatedWallet.Coin)
+}

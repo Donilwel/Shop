@@ -18,7 +18,6 @@ import (
 func TestPutMoneyHandler_Success(t *testing.T) {
 	SetupTestDB()
 
-	// Создание пользователя и кошелька
 	user := models.User{ID: uuid.New(), Username: "admin", Email: "admin@example.com"}
 	migrations.DB.Create(&user)
 	wallet := models.Wallet{UserID: user.ID, Coin: 1000}
