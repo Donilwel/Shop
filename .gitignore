@@ -1,0 +1,50 @@
+# ОС
+.DS_Store            # macOS
+Thumbs.db            # Windows
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Каталоги для IDE
+.idea/
+.vscode/
+
+# Файлы сборки
+*.out
+*.o
+*.a
+*.class
+*.exe
+
+# Папки зависимостей
+node_modules/
+vendor/
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Временные файлы Go
+*.test
+*.prof
+
+# Базы данных и миграции
+*.db
+*.sqlite
+migrations/
+
+# Конфигурационные файлы среды
+.env
+.env.local
+.env.*.local
+*.env
+
+# Файлы с конфиденциальной информацией
+*.pem
+*.key
+*.crt
