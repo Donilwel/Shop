@@ -134,7 +134,7 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 	if len(walletSlice) > 0 {
 		wallet = walletSlice[0]
 	}
-	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Кошелек загружен из "+getSource(fromCacheWallet))
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Кошелек загружен из "+GetSource(fromCacheWallet))
 
 	var inventory []struct {
 		Type     string `json:"type"`
@@ -151,7 +151,7 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve inventory", http.StatusInternalServerError)
 		return
 	}
-	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Инвентарь загружен из "+getSource(fromCacheInventory))
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Инвентарь загружен из "+GetSource(fromCacheInventory))
 
 	var received []struct {
 		FromUser string `json:"fromUser"`
@@ -167,7 +167,7 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve received transactions", http.StatusInternalServerError)
 		return
 	}
-	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+getSource(fromCacheReceived))
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+GetSource(fromCacheReceived))
 
 	var sent []struct {
 		ToUser string `json:"toUser"`
@@ -184,7 +184,7 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+getSource(fromCacheSent))
+	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+GetSource(fromCacheSent))
 
 	response := InfoMain{
 		Coins:     wallet.Coin,
@@ -208,7 +208,7 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Информация показана успешно")
 }
 
-func getSource(fromCache bool) string {
+func GetSource(fromCache bool) string {
 	if fromCache {
 		return "Redis"
 	}
@@ -376,16 +376,16 @@ func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Покупатель не найден в базе данных", http.StatusNotFound)
 		return
 	}
-	if err := tx.Where("name = ?", itemName).First(&merch).Error; err != nil {
-		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Запрошенная вещь не существует в базе данных")
-		http.Error(w, "Запрошенная вещь не существует в базе данных", http.StatusNotFound)
-		return
-	}
-
 	var wallet models.Wallet
 	if err := tx.Where("user_id = ?", userID).First(&wallet).Error; err != nil {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Кошелька покупателя не существует в базе данных")
 		http.Error(w, "Кошелька покупателя не существует в базе данных", http.StatusNotFound)
+		return
+	}
+
+	if err := tx.Where("name = ?", itemName).First(&merch).Error; err != nil {
+		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, err, startTime, "Запрошенная вещь не существует в базе данных")
+		http.Error(w, "Запрошенная вещь не существует в базе данных", http.StatusNotFound)
 		return
 	}
 

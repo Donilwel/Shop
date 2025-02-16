@@ -73,11 +73,6 @@ func TestAuthHandler_InvalidPassword(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 }
 
-type AuthRequest struct {
-	Email    string `json:"email" example:"user@example.com"`
-	Password string `json:"password" example:"securepassword"`
-}
-
 func TestAuthHandler_CreateNewUser(t *testing.T) {
 	setupTestDB()
 	requestBody, _ := json.Marshal(map[string]string{

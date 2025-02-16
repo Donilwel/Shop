@@ -90,6 +90,7 @@ func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
 		return
 	}
+	http.Error(w, "Перевод монет успешен", http.StatusOK)
 }
 
 type MerchInfo struct {

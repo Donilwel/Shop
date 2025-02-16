@@ -317,13 +317,16 @@ func TestBuyItemHandler_UserNotFound(t *testing.T) {
 func TestBuyItemHandler_ItemNotFound(t *testing.T) {
 	setupTestDB()
 
-	user := models.User{ID: uuid.New(), Username: "buyer"}
+	user := models.User{ID: uuid.New(), Username: "buyer", Email: "byuer@example.com"}
 	migrations.DB.Create(&user)
+
+	wallet := models.Wallet{UserID: user.ID, Coin: 100}
+	migrations.DB.Create(&wallet)
 
 	userID := user.ID
 	itemName := "NonExistentItem"
 
-	r := httptest.NewRequest(http.MethodGet, "/buy/"+itemName, nil)
+	r := httptest.NewRequest(http.MethodGet, "/api/buy/"+itemName, nil)
 	ctx := r.Context()
 	ctx = context.WithValue(ctx, utils.UserIDKey, userID)
 	r = r.WithContext(ctx)
@@ -335,29 +338,41 @@ func TestBuyItemHandler_ItemNotFound(t *testing.T) {
 	assert.Contains(t, w.Body.String(), "Запрошенная вещь не существует в базе данных")
 }
 
-//func TestBuyItemHandler_WalletNotFound(t *testing.T) {
-//	setupTestDB()
-//
-//	user := models.User{ID: uuid.New(), Username: "buyer"}
-//	migrations.DB.Create(&user)
-//	merch := models.Merch{Name: "TestItem", Price: 50}
-//	migrations.DB.Create(&merch)
-//
-//	userID := user.ID
-//	itemName := merch.Name
-//
-//	r := httptest.NewRequest(http.MethodGet, "/buy/"+itemName, nil)
-//	ctx := r.Context()
-//	ctx = context.WithValue(ctx, utils.UserIDKey, userID)
-//	r = r.WithContext(ctx)
-//	w := httptest.NewRecorder()
-//
-//	handlers.BuyItemHandler(w, r)
-//
-//	assert.Equal(t, http.StatusNotFound, w.Code)
-//	assert.Contains(t, w.Body.String(), "Кошелька покупателя не существует в базе данных")
-//}
-//
+func TestGetSource(t *testing.T) {
+	t.Run("When fromCache is true", func(t *testing.T) {
+		result := handlers.GetSource(true)
+		assert.Equal(t, "Redis", result)
+	})
+
+	t.Run("When fromCache is false", func(t *testing.T) {
+		result := handlers.GetSource(false)
+		assert.Equal(t, "PostgreSQL", result)
+	})
+}
+
+func TestBuyItemHandler_WalletNotFound(t *testing.T) {
+	setupTestDB()
+
+	merch := models.Merch{Name: "TestMerch", Price: 100}
+	migrations.DB.Create(&merch)
+
+	user := models.User{ID: uuid.New(), Username: "buyer", Email: "buyer@example.com"}
+	migrations.DB.Create(&user)
+
+	userID := user.ID
+
+	r := httptest.NewRequest(http.MethodGet, "/api/buy/"+merch.Name, nil)
+	ctx := r.Context()
+	ctx = context.WithValue(ctx, utils.UserIDKey, userID)
+	r = r.WithContext(ctx)
+	w := httptest.NewRecorder()
+
+	handlers.BuyItemHandler(w, r)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.Contains(t, w.Body.String(), "Кошелька покупателя не существует в базе данных")
+}
+
 //func TestBuyItemHandler_InsufficientFunds(t *testing.T) {
 //	setupTestDB()
 //
@@ -368,7 +383,7 @@ func TestBuyItemHandler_ItemNotFound(t *testing.T) {
 //	wallet := models.Wallet{UserID: user.ID, Coin: 10}
 //	migrations.DB.Create(&wallet)
 //
-//	r := httptest.NewRequest(http.MethodGet, "/buy/"+merch.Name, nil)
+//	r := httptest.NewRequest(http.MethodGet, "/api/buy/"+merch.Name, nil)
 //	ctx := r.Context()
 //	ctx = context.WithValue(ctx, utils.UserIDKey, user.ID)
 //	r = r.WithContext(ctx)
@@ -382,20 +397,61 @@ func TestBuyItemHandler_ItemNotFound(t *testing.T) {
 //
 //func TestBuyItemHandler_Success(t *testing.T) {
 //	setupTestDB()
+//
+//	// Создаем мерч
 //	merch := models.Merch{Name: "TestItem", Price: 50}
-//	migrations.DB.Create(&merch)
+//	err := migrations.DB.Create(&merch).Error
+//	if err != nil {
+//		t.Fatalf("Ошибка при создании мерча: %v", err)
+//	}
+//
+//	// Создаем пользователя
 //	user := models.User{ID: uuid.New(), Username: "buyer", Email: "buyer@example.com"}
-//	migrations.DB.Create(&user)
+//	err = migrations.DB.Create(&user).Error
+//	if err != nil {
+//		t.Fatalf("Ошибка при создании пользователя: %v", err)
+//	}
+//
+//	// Создаем кошелек для пользователя
 //	wallet := models.Wallet{UserID: user.ID, Coin: 100}
-//	migrations.DB.Create(&wallet)
-//	time.Sleep(100 * time.Millisecond)
+//	err = migrations.DB.Create(&wallet).Error
+//	if err != nil {
+//		t.Fatalf("Ошибка при создании кошелька: %v", err)
+//	}
+//
+//	// Проверяем, что данные действительно созданы
+//	var createdMerch models.Merch
+//	err = migrations.DB.First(&createdMerch, "name = ?", "TestItem").Error
+//	if err != nil {
+//		t.Fatalf("Ошибка при проверке существования мерча: %v", err)
+//	}
+//
+//	var createdWallet models.Wallet
+//	err = migrations.DB.First(&createdWallet, "user_id = ?", user.ID).Error
+//	if err != nil {
+//		t.Fatalf("Ошибка при проверке существования кошелька: %v", err)
+//	}
+//
+//	// Запрос для покупки
 //	r := httptest.NewRequest(http.MethodGet, "/api/buy/TestItem", nil)
 //	ctx := r.Context()
 //	ctx = context.WithValue(ctx, utils.UserIDKey, user.ID)
 //	r = r.WithContext(ctx)
 //	w := httptest.NewRecorder()
 //
+//	// Выполнение обработчика
 //	handlers.BuyItemHandler(w, r)
 //
+//	// Проверяем ответ
 //	assert.Equal(t, http.StatusOK, w.Code)
+//
+//	// Проверяем, что баланс уменьшился
+//	var updatedWallet models.Wallet
+//	err = migrations.DB.First(&updatedWallet, "user_id = ?", user.ID).Error
+//	if err != nil {
+//		t.Fatalf("Ошибка при получении обновленного кошелька: %v", err)
+//	}
+//
+//	// Баланс должен уменьшиться на цену товара
+//	assert.Equal(t, uint(0x64), updatedWallet.Coin)
 //}

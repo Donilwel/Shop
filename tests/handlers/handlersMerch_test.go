@@ -11,9 +11,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
-func TestShowMerchHandlerSuccess(t *testing.T) {
+func TestShowMerchHandler_Success(t *testing.T) {
 	setupTestDB()
 	userID := uuid.New()
 	merch := models.Merch{Name: "TestMerch", Price: 100}
@@ -30,9 +31,10 @@ func TestShowMerchHandlerSuccess(t *testing.T) {
 	defer res.Body.Close()
 
 	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.Contains(t, w.Body.String(), "TestMerch")
 }
 
-func TestShowMerchHandlerNotFound(t *testing.T) {
+func TestShowMerchHandler_NotFound(t *testing.T) {
 	setupTestDB()
 	userID := uuid.New()
 
@@ -47,4 +49,29 @@ func TestShowMerchHandlerNotFound(t *testing.T) {
 	defer res.Body.Close()
 
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
+}
+
+func TestShowMerchHandler_Timeout(t *testing.T) {
+	setupTestDB()
+	userID := uuid.New()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
+	defer cancel()
+
+	merch := models.Merch{Name: "TestMerch", Price: 100}
+	migrations.DB.Create(&merch)
+
+	req := httptest.NewRequest(http.MethodGet, "/merch", nil)
+	req = req.WithContext(ctx)
+	ctx = req.Context()
+	ctx = context.WithValue(ctx, utils.UserIDKey, userID)
+	req = req.WithContext(ctx)
+
+	w := httptest.NewRecorder()
+	handlers.ShowMerchHandler(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+
+	assert.Equal(t, http.StatusRequestTimeout, res.StatusCode)
+	assert.Contains(t, w.Body.String(), "Запрос отменен клиентом")
 }

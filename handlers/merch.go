@@ -37,6 +37,7 @@ func ShowMerchHandler(w http.ResponseWriter, r *http.Request) {
 	select {
 	case <-ctx.Done():
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusRequestTimeout, nil, startTime, "Запрос отменен клиентом")
+		http.Error(w, "Запрос отменен клиентом", http.StatusRequestTimeout)
 		return
 	default:
 	}
@@ -44,13 +45,13 @@ func ShowMerchHandler(w http.ResponseWriter, r *http.Request) {
 	fromCache, err := utils.GetOrSetCache(ctx, config.Rdb, migrations.DB, cacheKey, migrations.DB, &merches, 5*time.Minute)
 	if err != nil {
 		loging.LogRequest(logrus.ErrorLevel, userID, r, http.StatusInternalServerError, err, startTime, "Ошибка при поиске мерча.")
-		http.Error(w, "Error fetching couriers", http.StatusInternalServerError)
+		http.Error(w, "Ошибка при поиске мерча", http.StatusInternalServerError)
 		return
 	}
 
 	if len(merches) == 0 {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusNotFound, nil, startTime, "Мерч не найден")
-		http.Error(w, "No couriers found", http.StatusNotFound)
+		http.Error(w, "Мерч не найден", http.StatusNotFound)
 		return
 	}
 	data := "postgreSQL"
