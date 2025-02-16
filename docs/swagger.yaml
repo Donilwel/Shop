@@ -1,0 +1,480 @@
+basePath: /api
+definitions:
+  handlers.AuthRequest:
+    description: Структура для входа пользователя
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: securepassword
+        type: string
+    type: object
+  handlers.InfoAfterBying:
+    properties:
+      balance: {}
+      item: {}
+      nickname: {}
+    type: object
+  handlers.InfoMain:
+    properties:
+      coinHistory:
+        properties:
+          received:
+            items:
+              properties:
+                amount:
+                  type: integer
+                fromUser:
+                  type: string
+              type: object
+            type: array
+          sent:
+            items:
+              properties:
+                amount:
+                  type: integer
+                toUser:
+                  type: string
+              type: object
+            type: array
+        type: object
+      coins:
+        type: integer
+      inventory:
+        items:
+          properties:
+            quantity:
+              type: integer
+            type:
+              type: string
+          type: object
+        type: array
+    type: object
+  handlers.MerchInfo:
+    properties:
+      price:
+        type: integer
+      type:
+        type: string
+    type: object
+  handlers.SendMoney:
+    properties:
+      coin:
+        type: integer
+      toUser:
+        type: string
+    type: object
+  handlers.TransactionsResponse:
+    properties:
+      coin:
+        type: integer
+      toUser:
+        type: string
+    type: object
+  models.Merch:
+    description: Структура сделки
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+    type: object
+  models.Transaction:
+    description: Структура транзакции
+    properties:
+      amount:
+        type: integer
+      createdAt:
+        type: string
+      fromUser:
+        type: string
+      id:
+        type: string
+      toUser:
+        type: string
+    type: object
+  models.User:
+    description: Структура user
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для магазина с авторизацией, покупками и админ-панелью
+  title: Shop API
+  version: "1.0"
+paths:
+  /api/admin/merch/new:
+    post:
+      consumes:
+      - application/json
+      description: Позволяет добавить новый мерч или изменить цену существующего мерча.
+        Проверяет корректность данных и наличие мерча.
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.MerchInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Мерч успешно добавлен или цена обновлена
+          schema:
+            type: string
+        "400":
+          description: Некорректное тело запроса, неверный тип или цена мерча
+          schema:
+            type: string
+        "404":
+          description: Мерч с таким именем уже существует
+          schema:
+            type: string
+        "500":
+          description: Ошибка добавления нового мерча или обновления цены
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Добавление или изменение цены мерча
+      tags:
+      - Admin
+  /api/admin/users/{username}:
+    post:
+      consumes:
+      - application/json
+      description: Позволяет перевести монеты работнику по его никнейму, проверяя
+        корректность данных и существование получателя.
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.SendMoney'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Перевод монет успешен
+          schema:
+            type: string
+        "400":
+          description: Некорректное тело запроса или неверное количество монет
+          schema:
+            type: string
+        "404":
+          description: Не найден работник или кошелек получателя
+          schema:
+            type: string
+        "500":
+          description: Ошибка обновления баланса получателя или фиксации транзакции
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Перевод монет работнику
+      tags:
+      - Admin
+  /api/auth:
+    post:
+      consumes:
+      - application/json
+      description: Авторизует пользователя по email и паролю, создавая учетную запись
+        автоматически, если пользователя нет в базе.
+      parameters:
+      - description: Тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Возвращает JWT-токен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "201":
+          description: Пользователь создан автоматически
+          schema:
+            type: string
+        "400":
+          description: Некорректное тело запроса
+          schema:
+            type: string
+        "401":
+          description: Неверный пароль
+          schema:
+            type: string
+        "408":
+          description: Запрос отменен клиентом
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Авторизация пользователя
+      tags:
+      - Auth
+  /api/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Отзывает текущий токен авторизации и добавляет его в список отозванных
+        токенов.
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Выход выполнен успешно
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Отсутствует токен авторизации / Некорректный формат токена
+          schema:
+            type: string
+        "500":
+          description: Не удалось отозвать токен
+          schema:
+            type: string
+      summary: Выход из системы
+      tags:
+      - Auth
+  /api/buy/{item}:
+    get:
+      consumes:
+      - application/json
+      description: Позволяет пользователю купить товар, указав его имя. Проверяется
+        наличие средств на кошельке и успешность покупки.
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Название товара
+        example: '"item_name"'
+        in: path
+        name: item
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о балансе и купленном товаре
+          schema:
+            $ref: '#/definitions/handlers.InfoAfterBying'
+        "400":
+          description: Недостаточно средств на кошельке
+          schema:
+            type: string
+        "404":
+          description: Покупатель или товар не найдены
+          schema:
+            type: string
+        "500":
+          description: Ошибка сохранения в базе данных
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Покупка товара пользователем
+      tags:
+      - Employee
+  /api/info:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о кошельке, инвентаре и истории транзакций
+        для конкретного пользователя.
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о кошельке и транзакциях
+          schema:
+            $ref: '#/definitions/handlers.InfoMain'
+        "400":
+          description: Некорректный запрос
+          schema:
+            type: string
+        "404":
+          description: Не найден пользователь или его данные
+          schema:
+            type: string
+        "500":
+          description: Ошибка на сервере при получении данных
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Получение информации о кошельке, инвентаре и транзакциях пользователя
+      tags:
+      - Employee
+  /api/merch:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список товаров из базы данных или кэша Redis.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список мерча
+          schema:
+            items:
+              $ref: '#/definitions/models.Merch'
+            type: array
+        "404":
+          description: Мерч не найден
+          schema:
+            type: string
+        "500":
+          description: Ошибка при поиске мерча
+          schema:
+            type: string
+      summary: Получение списка мерча
+      tags:
+      - Employee
+  /api/ping:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает "pong", если сервер работает корректно
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: pong
+          schema:
+            type: string
+        "400":
+          description: Ошибка написания pong. Ошибка подключения
+          schema:
+            type: string
+      summary: Проверка работоспособности сервера
+      tags:
+      - Ping
+  /api/sendCoin:
+    post:
+      consumes:
+      - application/json
+      description: Позволяет пользователю отправить монеты другому пользователю, указав
+        его имя и количество монет для отправки.
+      parameters:
+      - description: Bearer {token}
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Тело запроса
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.TransactionsResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Транзакция успешно создана
+          schema:
+            $ref: '#/definitions/models.Transaction'
+        "400":
+          description: Неверный запрос - некорректный ввод, недостаточно монет или
+            попытка отправки себе
+          schema:
+            type: string
+        "404":
+          description: Не найдено - пользователь или кошелек не найдены
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера - проблемы с транзакцией в базе данных
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Отправка монет от одного пользователя другому
+      tags:
+      - Employee
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список сотрудников с их ID, именем пользователя и email
+        из базы данных или кэша Redis.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список сотрудников
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "404":
+          description: Сотрудники не найдены
+          schema:
+            type: string
+        "408":
+          description: Запрос отменен клиентом
+          schema:
+            type: string
+        "500":
+          description: Ошибка при поиске сотрудников
+          schema:
+            type: string
+      summary: Получение списка сотрудников
+      tags:
+      - Employee
+swagger: "2.0"

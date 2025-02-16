@@ -10,6 +10,9 @@ const (
 	EMPLOYEE_ROLE string = "EMPLOYEE_ROLE"
 )
 
+// User
+//
+// @Description Структура user
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Username  string    `gorm:"type:varchar(100);unique;not null"`

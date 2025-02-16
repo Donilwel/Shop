@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// Transaction
+//
+// @Description Структура транзакции
 type Transaction struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primary_key"`
 	FromUser  uuid.UUID `gorm:"type:uuid;not null"`

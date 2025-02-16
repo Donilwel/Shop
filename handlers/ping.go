@@ -12,7 +12,7 @@ import (
 //
 // @Summary Проверка работоспособности сервера
 // @Description Возвращает "pong", если сервер работает корректно
-// @Tags health
+// @Tags Ping
 // @Accept  json
 // @Produce  plain
 // @Success 200 {string} string "pong"

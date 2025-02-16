@@ -13,19 +13,17 @@ import (
 	"time"
 )
 
-// ShowMerchHandler обрабатывает запрос на получение списка мерча.
+// ShowMerchHandler возвращает список доступного мерча.
 //
-// @Summary Получить список мерча
-// @Description Возвращает список доступного мерча, используя кэширование (Redis) или базу данных (PostgreSQL).
-// @Tags merch
-// @Accept json
-// @Produce json
-// @Security BearerAuth
+// @Summary Получение списка мерча
+// @Description Возвращает список товаров из базы данных или кэша Redis.
+// @Tags Employee
+// @Accept  json
+// @Produce  json
 // @Success 200 {array} models.Merch "Список мерча"
-// @Failure 400 {string} string "Некорректный запрос"
 // @Failure 404 {string} string "Мерч не найден"
-// @Failure 408 {string} string "Время ожидания истекло"
-// @Failure 500 {string} string "Ошибка сервера"
+// @Failure 500 {string} string "Ошибка при поиске мерча"
+// @Router /api/merch [get]
 func ShowMerchHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)

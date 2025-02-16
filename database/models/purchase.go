@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// Purchase
+//
+// @Description Структура сделки
 type Purchase struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primary_key"`
 	UserID    uuid.UUID `gorm:"type:uuid;not null;OnDelete:CASCADE"`

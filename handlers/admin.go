@@ -14,6 +14,26 @@ import (
 	"time"
 )
 
+type SendMoney struct {
+	NickTaker string `json:"toUser"`
+	Coin      uint   `json:"coin"`
+}
+
+// PutMoneyHandler Перевод монет работнику
+//
+// @Summary Перевод монет работнику
+// @Description Позволяет перевести монеты работнику по его никнейму, проверяя корректность данных и существование получателя.
+// @Tags Admin
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer {token}"
+// @Param request body SendMoney true "Тело запроса"
+// @Success 200 {object} string "Перевод монет успешен"
+// @Failure 400 {object} string "Некорректное тело запроса или неверное количество монет"
+// @Failure 404 {object} string "Не найден работник или кошелек получателя"
+// @Failure 500 {object} string "Ошибка обновления баланса получателя или фиксации транзакции"
+// @Router /api/admin/users/{username} [post]
+// @Security BearerAuth
 func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
@@ -21,10 +41,7 @@ func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	var input struct {
-		NickTaker string `json:"toUser"`
-		Coin      uint   `json:"coin"`
-	}
+	var input SendMoney
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, err, startTime, "Некорректное тело запроса")
@@ -75,6 +92,26 @@ func PutMoneyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type MerchInfo struct {
+	Type  string `json:"type"`
+	Price uint   `json:"price"`
+}
+
+// AddOrChangeMerchHandler добавить или изменить цену мерча
+//
+// @Summary Добавление или изменение цены мерча
+// @Description Позволяет добавить новый мерч или изменить цену существующего мерча. Проверяет корректность данных и наличие мерча.
+// @Tags Admin
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer {token}"
+// @Param request body MerchInfo true "Тело запроса"
+// @Success 200 {object} string "Мерч успешно добавлен или цена обновлена"
+// @Failure 400 {object} string "Некорректное тело запроса, неверный тип или цена мерча"
+// @Failure 404 {object} string "Мерч с таким именем уже существует"
+// @Failure 500 {object} string "Ошибка добавления нового мерча или обновления цены"
+// @Router /api/admin/merch/new [post]
+// @Security BearerAuth
 func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 
@@ -87,10 +124,7 @@ func AddOrChangeMerchHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	var input struct {
-		Type  string `json:"type"`
-		Price uint   `json:"price"`
-	}
+	var input MerchInfo
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, err, startTime, "Некорректное тело запроса")

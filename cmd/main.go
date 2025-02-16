@@ -4,6 +4,7 @@ import (
 	"Shop/config"
 	"Shop/database/migrations"
 	"Shop/database/models"
+	_ "Shop/docs"
 	"Shop/handlers"
 	"Shop/loging"
 	"Shop/utils"
@@ -18,7 +19,7 @@ import (
 
 // @title Shop API
 // @version 1.0
-// @description API для работы с магазином
+// @description API для магазина с авторизацией, покупками и админ-панелью
 // @host localhost:8080
 // @BasePath /api
 func main() {

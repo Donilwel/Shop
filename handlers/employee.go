@@ -17,6 +17,24 @@ import (
 	"time"
 )
 
+type Employee struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+// ShowEmployeesHandler возвращает список сотрудников.
+//
+// @Summary Получение списка сотрудников
+// @Description Возвращает список сотрудников с их ID, именем пользователя и email из базы данных или кэша Redis.
+// @Tags Employee
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.User "Список сотрудников"
+// @Failure 404 {string} string "Сотрудники не найдены"
+// @Failure 408 {string} string "Запрос отменен клиентом"
+// @Failure 500 {string} string "Ошибка при поиске сотрудников"
+// @Router /api/users [get]
 func ShowEmployeesHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
@@ -24,17 +42,14 @@ func ShowEmployeesHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	var users []struct {
-		ID       string `json:"id"`
-		Username string `json:"username"`
-		Email    string `json:"email"`
-	}
+	var users []Employee
 
 	cacheKey := "users:employees"
 
 	select {
 	case <-ctx.Done():
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusRequestTimeout, nil, startTime, "Запрос отменен клиентом")
+		http.Error(w, "Запрос отменен клиентом", http.StatusRequestTimeout)
 		return
 	default:
 	}
@@ -64,11 +79,43 @@ func ShowEmployeesHandler(w http.ResponseWriter, r *http.Request) {
 	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Список сотрудников показан успешно с помощью "+data)
 }
 
+type InfoMain struct {
+	Coins     uint `json:"coins"`
+	Inventory []struct {
+		Type     string `json:"type"`
+		Quantity int    `json:"quantity"`
+	} `json:"inventory"`
+	CoinHistory struct {
+		Received []struct {
+			FromUser string `json:"fromUser"`
+			Amount   uint   `json:"amount"`
+		} `json:"received"`
+		Sent []struct {
+			ToUser string `json:"toUser"`
+			Amount uint   `json:"amount"`
+		} `json:"sent"`
+	} `json:"coinHistory"`
+}
+
+// InformationHandler информация о пользователе
+//
+// @Summary Получение информации о кошельке, инвентаре и транзакциях пользователя
+// @Description Возвращает информацию о кошельке, инвентаре и истории транзакций для конкретного пользователя.
+// @Tags Employee
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer {token}"
+// @Success 200 {object} InfoMain "Информация о кошельке и транзакциях"
+// @Failure 400 {object} string "Некорректный запрос"
+// @Failure 404 {object} string "Не найден пользователь или его данные"
+// @Failure 500 {object} string "Ошибка на сервере при получении данных"
+// @Router /api/info [get]
+// @Security BearerAuth
 func InformationHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	ctx := r.Context()
 	userID, _ := ctx.Value(utils.UserIDKey).(uuid.UUID)
-	cacheTTL := 5 * time.Minute // Время жизни кэша
+	cacheTTL := 5 * time.Minute
 
 	walletCacheKey := fmt.Sprintf("wallet:%s", userID)
 	inventoryCacheKey := fmt.Sprintf("inventory:%s", userID)
@@ -139,12 +186,21 @@ func InformationHandler(w http.ResponseWriter, r *http.Request) {
 
 	loging.LogRequest(logrus.InfoLevel, userID, r, http.StatusOK, nil, startTime, "Отправленные транзакции загружены из "+getSource(fromCacheSent))
 
-	response := map[string]interface{}{
-		"coins":     wallet.Coin,
-		"inventory": inventory,
-		"coinHistory": map[string]interface{}{
-			"received": received,
-			"sent":     sent,
+	response := InfoMain{
+		Coins:     wallet.Coin,
+		Inventory: inventory,
+		CoinHistory: struct {
+			Received []struct {
+				FromUser string `json:"fromUser"`
+				Amount   uint   `json:"amount"`
+			} `json:"received"`
+			Sent []struct {
+				ToUser string `json:"toUser"`
+				Amount uint   `json:"amount"`
+			} `json:"sent"`
+		}{
+			Received: received,
+			Sent:     sent,
 		},
 	}
 
@@ -159,6 +215,25 @@ func getSource(fromCache bool) string {
 	return "PostgreSQL"
 }
 
+type TransactionsResponse struct {
+	NickTaker string `json:"toUser"`
+	Coin      uint   `json:"coin"`
+}
+
+// SendCoinHandler Отправка монет
+// @Summary Отправка монет от одного пользователя другому
+// @Description Позволяет пользователю отправить монеты другому пользователю, указав его имя и количество монет для отправки.
+// @Tags Employee
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer {token}"
+// @Param request body TransactionsResponse true "Тело запроса"
+// @Success 200 {object} models.Transaction "Транзакция успешно создана"
+// @Failure 400 {object} string "Неверный запрос - некорректный ввод, недостаточно монет или попытка отправки себе"
+// @Failure 404 {object} string "Не найдено - пользователь или кошелек не найдены"
+// @Failure 500 {object} string "Внутренняя ошибка сервера - проблемы с транзакцией в базе данных"
+// @Router /api/sendCoin [post]
+// @Security BearerAuth
 func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID, _ := r.Context().Value(utils.UserIDKey).(uuid.UUID)
@@ -166,10 +241,7 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	var input struct {
-		NickTaker string `json:"toUser"`
-		Coin      uint   `json:"coin"`
-	}
+	var input = TransactionsResponse{}
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		loging.LogRequest(logrus.WarnLevel, userID, r, http.StatusBadRequest, err, startTime, "Некорректное тело запроса")
@@ -263,6 +335,26 @@ func SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	utils.JSONFormat(w, r, transaction)
 }
 
+type InfoAfterBying struct {
+	Balance  interface{} `json:"balance"`
+	Item     interface{} `json:"item"`
+	Nickname interface{} `json:"nickname"`
+}
+
+// BuyItemHandler Покупка товара
+// @Summary Покупка товара пользователем
+// @Description Позволяет пользователю купить товар, указав его имя. Проверяется наличие средств на кошельке и успешность покупки.
+// @Tags Employee
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer {token}"
+// @Param item path string true "Название товара" example("item_name")
+// @Success 200 {object} InfoAfterBying "Информация о балансе и купленном товаре"
+// @Failure 400 {object} string "Недостаточно средств на кошельке"
+// @Failure 404 {object} string "Покупатель или товар не найдены"
+// @Failure 500 {object} string "Ошибка сохранения в базе данных"
+// @Router /api/buy/{item} [get]
+// @Security BearerAuth
 func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
 	startTime := time.Now()
 	userID := r.Context().Value(utils.UserIDKey).(uuid.UUID)
@@ -326,9 +418,9 @@ func BuyItemHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка фиксации транзакции", http.StatusInternalServerError)
 		return
 	}
-	utils.JSONFormat(w, r, map[string]interface{}{
-		"balance":  wallet.Coin,
-		"item":     itemName,
-		"nickname": user.Username,
+	utils.JSONFormat(w, r, InfoAfterBying{
+		Balance:  wallet.Coin,
+		Item:     itemName,
+		Nickname: user.Username,
 	})
 }

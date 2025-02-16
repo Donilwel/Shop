@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+// RevokedToken
+//
+// @Description Структура запрещенного токена
 type RevokedToken struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primary_key"`
 	Token     string    `gorm:"unique;not null"`
